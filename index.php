@@ -4210,6 +4210,10 @@ function prepareHost() {
   }
 }
 
+// ★ [v41] jina.aiスクレイプ(403→401とブロック挙動が変わり続け根本的に不安定と
+//   判明)には依存しない。呼び出し側が空配列を受け取った場合、無関係な固定動画
+//   (DEFAULT_BG_VIDEO_ID)を再生する代わりに、この関数が返す実際のYouTube検索
+//   URL(第2引数 `url`)へ直接画面遷移させること(navigateToNonPlayableUrl参照)。
 function fetchSearchResultIds(cb) {
   // ★FIX: 同じシリーズの urls 内に YouTube 検索URLがあればそれを優先利用する
   //        （btn は単なるボタン名で、ユーザの意図した検索クエリと一致しない場合がある）
@@ -4223,17 +4227,7 @@ function fetchSearchResultIds(cb) {
     var q = SEARCH_SERIES[currentSeriesIndex].btn;
     url = 'https://www.youtube.com/results?search_query=' + encodeURIComponent(q);
   }
-  var __sq2 = extractSearchQuery(url);  // ★ [v37] 検索ワード
-  fetch('https://r.jina.ai/' + url, { credentials: 'omit', mode: 'cors', headers: { 'x-respond-with': 'markdown' } })
-    .then(function(r) { if (!r.ok) throw new Error('http'); return r.text(); })
-    .then(function(t) {
-      // ★ [v37-BUG] 検索ワードに関連するIDだけを出現順で抽出(無関係動画を排除)
-      var sids = collectRelevantSearchIds(t, __sq2);
-      if (!sids.length) sids = collectSearchResultIds(t);
-      if (!sids.length) sids = collectYouTubeIds(t);
-      cb(sids);
-    })
-    .catch(function() { cb([]); });
+  cb([], url);
 }
 
 // ★ [v32] 検索結果の関連性チェック + 一度だけ再検索する機能
@@ -4420,20 +4414,27 @@ function playAtUrlIndex(idx, dir) {
     });
   } else {
     if (searchResultIds.length === 0) {
-      fetchSearchResultIds(function(ids) {
+      fetchSearchResultIds(function(ids, searchUrl) {
         if (myToken !== ytSearchFetchToken) return;
-        if (!ids || !ids.length) { launchVideoOrNavigate(DEFAULT_BG_VIDEO_ID, 0, 'youtube', null); return; }
+        // ★ [v41] jina.aiスクレイプは廃止したため ids は常に空。無関係な固定動画
+        //   (DEFAULT_BG_VIDEO_ID)を再生する代わりに、実際のYouTube検索結果
+        //   ページへ画面遷移する(パネルCLOSE中はSKIP扱いで何もしない)。
+        if (!ids || !ids.length) {
+          if (!isYtPanelClosed()) { navigateToNonPlayableUrl(searchUrl); }
+          return;
+        }
         searchResultIds = ids.slice();
         prepareRandomSearchPool(searchResultIds);
-        var vid = getNextRandomSearchId() || DEFAULT_BG_VIDEO_ID;
-        launchVideoOrNavigate(vid, 0, 'youtube', null);
+        var vid = getNextRandomSearchId();
+        if (vid) { launchVideoOrNavigate(vid, 0, 'youtube', null); }
+        else if (!isYtPanelClosed()) { navigateToNonPlayableUrl(searchUrl); }
       });
     } else {
       searchResultPage = dir === 'prev'
         ? Math.max(0, searchResultPage - 1)
         : Math.min(searchResultIds.length - 1, searchResultPage + 1);
       if (dir === 'next' && searchResultPage >= searchResultIds.length - 1) {
-        fetchSearchResultIds(function(ids) {
+        fetchSearchResultIds(function(ids, searchUrl) {
           if (myToken !== ytSearchFetchToken) return;
           // ★FIX: 既存IDに含まれない「本当に新しい」IDだけ追加し、その先頭から再生
           //        新IDが無ければ wrap-around して別の動画を確実に再生する
@@ -4452,12 +4453,14 @@ function playAtUrlIndex(idx, dir) {
             // 新しい動画が見つからなかった → 既存リストの先頭に巻き戻して別動画を再生
             searchResultPage = 0;
           }
-          var vid = searchResultIds[searchResultPage] || DEFAULT_BG_VIDEO_ID;
-          launchVideoOrNavigate(vid, 0, 'youtube', null);
+          var vid = searchResultIds[searchResultPage];
+          if (vid) { launchVideoOrNavigate(vid, 0, 'youtube', null); }
+          else if (!isYtPanelClosed()) { navigateToNonPlayableUrl(searchUrl); }
         });
       } else {
-        var vid = searchResultIds[searchResultPage] || DEFAULT_BG_VIDEO_ID;
-        launchVideoOrNavigate(vid, 0, 'youtube', null);
+        var vid = searchResultIds[searchResultPage];
+        if (vid) { launchVideoOrNavigate(vid, 0, 'youtube', null); }
+        else if (!isYtPanelClosed()) { navigateToNonPlayableUrl('https://www.youtube.com/results?search_query=' + encodeURIComponent((SEARCH_SERIES[currentSeriesIndex] && SEARCH_SERIES[currentSeriesIndex].btn) || '')); }
       }
     }
   }
