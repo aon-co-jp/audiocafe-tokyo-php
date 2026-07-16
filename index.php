@@ -1,6 +1,25 @@
 <?php
 // ============================================================================
-// ★★★ FIX VERSION: 2026-07-16-v40 ★★★
+// ★★★ FIX VERSION: 2026-07-16-v41 ★★★
+// 修正項目:
+//   1. [v41-BUG / 方針転換] DD67000等のYouTube検索結果ボタンで無関係な動画が
+//      再生されるBUGが、v39/v40のjina.ai対策(ヘッダー追加)後も再発した。
+//      原因調査の結果、(a) v40のヘッダー修正が実は本番に反映されていなかった、
+//      (b) 反映後に再検証するとjina.ai自体が403から401 Unauthorizedへ挙動を
+//      変えており、ヘッダーで回避しても今度は認証エラーで弾かれることが判明した。
+//      jina.aiスクレイプ経由での「それらしい動画を推測して自動再生」という
+//      方式自体がjina.ai側の仕様変更に永続的に追随し続けねばならず根本的に
+//      不安定と判断し、ユーザー指示によりfetchAndCollect()内の検索URL処理を
+//      廃止。検索URLは他の「動画ページでないURL」(ホームページ等)と全く同じ
+//      共通分岐で扱うようにし、YouTube自身の検索結果ページへの直接画面遷移に
+//      統一した(スクレイプ・推測を挟まないため、無関係な動画が再生される
+//      可能性がそもそも存在しない)。
+//   2. 既知の残課題として明記: NEXT/ランダムプール経路(fetchSearchResultIds、
+//      「次へ」ボタン連打や統合ランダム再生時に検索結果を追加取得する経路)は
+//      今回のスコープ外——jina.ai失敗時にDEFAULT_BG_VIDEO_ID(無関係な固定動画)
+//      へフォールバックする経路が残っている。次回対応が必要。
+// ----------------------------------------------------------------------------
+// ★★★ (旧) FIX VERSION: 2026-07-16-v40 ★★★
 // 修正項目:
 //   1. [v40-BUG / 根本原因] DD67000に限らず「YouTube検索結果の動画が全て無関係な
 //      動画に差し替わる」BUGの真因を特定・修正。r.jina.ai がYouTube検索結果ページを
@@ -4002,26 +4021,25 @@ function fetchAndCollect(url, cb) {
     else { cb({ navigateUrl: url }); }
     return;
   }
-  // ★ [v31-BUG3] YouTube検索結果URL(youtube.com/results?search_query=...)は
-  //   isPlayableVideoUrl() が false を返すため、従来は cb(null) で「スキップ」され、
-  //   検索結果が一切再生されず DEFAULT_BG_VIDEO_ID(無関係な固定動画)に
-  //   フォールバックしていた(=「関係ない動画が再生される」BUGの正体)。
-  //   検索URLは jina.ai 経由でスクレイプして再生対象にするため、ここで除外しない。
-  // ★ [v13-BUG5] 検索URL以外で動画ページでないホームページ(ショップ等)は
-  //   ページ内の無関係な動画を拾わないよう cb(null) でスキップ扱いのまま。
-  // ★ [仕様変更] Google検索結果・ホームページ等の「動画ページでないURL」の扱いは
-  //   YouTube操作パネルの開閉状態で切り替える:
+  // ★ [v41-BUG / 根本対策] YouTube検索結果URL(youtube.com/results?search_query=...)を
+  //   jina.aiでスクレイプして「それらしい1本」を推測再生する方式は、jina.ai側の
+  //   ブロック挙動(403→ヘッダー追加で回避→さらに401)に何度も追随する必要があり
+  //   根本的に不安定と判明した(2026-07-16)。ユーザー指示により方針転換:
+  //   スクレイプ・推測再生はやめ、検索ワード(タイトル)によるYouTube検索結果
+  //   ページへの**直接画面遷移**に統一する。これはGoogle検索結果・ホームページ等の
+  //   「動画ページでないURL」と全く同じ扱い(下記の共通分岐)であり、
+  //   YouTube自身の検索エンジンが返す本物の関連動画を必ず案内できる
+  //   (無関係な動画が再生される可能性がそもそも存在しない)。
   //     - パネルCLOSE中 → 画面遷移せず SKIP して次の動画を自動再生
-  //     - パネルOPEN中  → 従来どおりそのホームページへ普通に画面遷移
+  //     - パネルOPEN中  → 実際のYouTube検索結果ページへ画面遷移
   //   ( DigitalConcertHall だけは上で navigateUrl による画面遷移を常に維持 )
-  if (!isPlayableVideoUrl(url) && !isYouTubeSearchUrl(url)) {
+  if (!isPlayableVideoUrl(url)) {
     if (isYtPanelClosed()) { cb({ skip: true }); }
     else { cb({ navigateUrl: url }); }
     return;
   }
   if (isYouTubeUrl(url)) {
-    // ★ [v31-BUG3] 検索URLは固定動画IDを持たないので必ず jina.ai スクレイプ経路へ。
-    var directId = isYouTubeSearchUrl(url) ? null : extractYouTubeId(url);
+    var directId = extractYouTubeId(url);
     if (directId) {
       var startSec = extractYouTubeStartSeconds(url);
       // ★ [BUGFIX] Shorts も通常動画と同じく YT.Player 経路(ytIds)で再生する。
@@ -4033,22 +4051,6 @@ function fetchAndCollect(url, cb) {
       cb({ ytIds: [directId], fbUrls: [], gdUrls: [], startSeconds: startSec });
       return;
     }
-    // 検索結果URL等はjina.ai経由でフェッチ
-    var __sq = extractSearchQuery(url);  // ★ [v37] このURLの検索ワード
-    fetch('https://r.jina.ai/' + url, { credentials: 'omit', mode: 'cors', headers: { 'x-respond-with': 'markdown' } })
-      .then(function(r) { if (!r.ok) throw new Error('http'); return r.text(); })
-      .then(function(t) {
-        // ★ [v37-BUG] まず検索ワードに関連するIDだけを出現順で抽出(無関係動画を排除)。
-        //   関連IDが空なら従来の出現順抽出 → さらに空なら雑な全ID抽出にフォールバック。
-        var sids = collectRelevantSearchIds(t, __sq);
-        if (!sids.length) sids = collectSearchResultIds(t);
-        if (!sids.length) sids = collectYouTubeIds(t);
-        cb({ ytIds: sids, fbUrls: [], gdUrls: [], startSeconds: 0 });
-      })
-      .catch(function(err) {
-        cb(null);
-      });
-    return;
   }
   if (/drive\.google\.com/i.test(url)) {
     var gm = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
