@@ -24,19 +24,19 @@ $current = $current ?? 'ja';
 
 各言語ページの先頭で`$current = '<lang>'; include __DIR__ . '/lang-nav.php';`するだけで、多言語ナビが機能する。アラビア語・ペルシャ語は`<html lang="ar" dir="rtl">`のように`dir="rtl"`を追加すること。
 
-## jina.aiスクレイプの403回避ヘッダー
+## 検索結果ベースのコンテンツはスクレイプせず直接遷移させる(教訓)
 
-YouTube検索結果ページ等、bot対策のあるページを`r.jina.ai`経由でスクレイプする場合、ヘッダー無しのfetchだと403で空ページしか返らないことがある。
+YouTube検索結果ページ等、bot対策のあるページを`r.jina.ai`のようなスクレイププロキシ経由で取得し、「それらしい1件」を推測して自動再生・自動表示する設計は避けること。2026-07-16、jina.aiのYouTubeに対するブロック挙動が403→(`X-Respond-With: markdown`ヘッダーで一時回避)→401と繰り返し変化し、外部サービスの仕様変更に永続的に追随し続ける必要があると判明したため、この設計自体を廃止した。
+
+代わりに、検索ワードに基づくコンテンツが必要な箇所は、スクレイプせず**実際の検索結果ページ(例: `https://www.youtube.com/results?search_query=...`)へ直接画面遷移させる**こと。ユーザーは本物の検索エンジンの結果を見ることになり、無関係なコンテンツが表示される可能性がそもそも存在しない。
 
 ```javascript
-fetch('https://r.jina.ai/' + url, {
-  credentials: 'omit',
-  mode: 'cors',
-  headers: { 'x-respond-with': 'markdown' }
-})
-```
+// 良い例: 実際の検索結果ページへ直接遷移
+window.location.assign('https://www.youtube.com/results?search_query=' + encodeURIComponent(query));
 
-このヘッダーはjina.ai公式のCORSプリフライトで許可されている(`Access-Control-Allow-Headers: x-respond-with`を確認済み)。同様の403問題が起きた場合、まずこのヘッダーの有無を疑うこと。
+// 避けるべき例: スクレイプして推測した1件を自動再生
+// fetch('https://r.jina.ai/' + searchUrl, {...}).then(...) // ← 外部サービスの挙動変化に弱い
+```
 
 ## 表記ゆれに強い文字列マッチング(`stripSeparators`)
 
