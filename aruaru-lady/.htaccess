@@ -1,0 +1,95 @@
+# ============================================================
+#  .htaccess  - Lolipop 共有サーバー向け キャッシュ制御
+#  デプロイ毎に古いキャッシュを無効化する設定
+# ============================================================
+
+# ------------------------------
+# 1. Lolipop アクセラレータ無効化
+#    .html / .htm の静的キャッシュを止める
+# ------------------------------
+<IfModule mod_headers.c>
+    # PHP 生成ページ（index.php など）を常に再検証させる
+    <FilesMatch "\.(php)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+    </FilesMatch>
+
+    # 静的 HTML（Lolipop アクセラレータがキャッシュしやすいファイル）
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "Thu, 01 Jan 1970 00:00:00 GMT"
+    </FilesMatch>
+
+    # CSS / JS は「バージョンクエリ付き URL」で更新するため
+    # ブラウザキャッシュ 1 時間のみ許可（長すぎず、短すぎず）
+    <FilesMatch "\.(css|js)$">
+        Header set Cache-Control "public, max-age=3600, must-revalidate"
+    </FilesMatch>
+
+    # 画像・フォントは長めにキャッシュ（変更頻度が低い）
+    <FilesMatch "\.(jpg|jpeg|png|gif|webp|svg|ico|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=2592000"
+    </FilesMatch>
+</IfModule>
+
+# ------------------------------
+# 2. mod_expires でも同様に制御（mod_headers が使えない場合の保険）
+# ------------------------------
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # PHP・HTML は即時失効
+    ExpiresByType application/x-httpd-php    "access plus 0 seconds"
+    ExpiresByType text/html                  "access plus 0 seconds"
+
+    # CSS / JS : 1 時間
+    ExpiresByType text/css                   "access plus 1 hour"
+    ExpiresByType application/javascript     "access plus 1 hour"
+    ExpiresByType text/javascript            "access plus 1 hour"
+
+    # 画像・フォント : 30 日
+    ExpiresByType image/jpeg                 "access plus 30 days"
+    ExpiresByType image/png                  "access plus 30 days"
+    ExpiresByType image/gif                  "access plus 30 days"
+    ExpiresByType image/webp                 "access plus 30 days"
+    ExpiresByType image/svg+xml              "access plus 30 days"
+    ExpiresByType image/x-icon              "access plus 30 days"
+    ExpiresByType font/woff                  "access plus 30 days"
+    ExpiresByType font/woff2                 "access plus 30 days"
+</IfModule>
+
+# ------------------------------
+# 3. ETag を無効化（Lolipop クラスタ間で ETag がズレる問題対策）
+# ------------------------------
+<IfModule mod_headers.c>
+    Header unset ETag
+</IfModule>
+FileETag None
+
+# ------------------------------
+# 4. GZIP 圧縮（転送速度向上）
+# ------------------------------
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/css
+    AddOutputFilterByType DEFLATE application/javascript text/javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+</IfModule>
+
+# ------------------------------
+# 5. 文字コード統一（日本語文字化け防止）
+# ------------------------------
+AddDefaultCharset UTF-8
+
+# ------------------------------
+# 6. PHP 側でもキャッシュ無効ヘッダーを強制送信させる場合は
+#    index.php の先頭に以下を追記してください（参考）:
+#
+#    <?php
+#    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+#    header('Pragma: no-cache');
+#    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
+#    ?>
+# ============================================================

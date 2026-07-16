@@ -1,0 +1,20 @@
+# サイトと無関係な別ツール・誤って配置された別リポジトリ
+/Python/
+/aruaru/aruaru-db/
+
+# キャッシュ・ログ・バックアップ(生成物、実行時に再生成される)
+*-cache.json
+*.log
+*.backup
+*~
+/*/index.html.*
+
+# 個人情報ファイル(公開リポジトリのため除外)
+top/rirekisho.pdf
+top/shokurekisho.pdf
+top/スマホ保険.txt
+top/石塚正浩-履歴書.xlsx
+top/石塚正浩-職歴書.xlsx
+
+# ロックファイル(実行時生成物)
+*.lock
