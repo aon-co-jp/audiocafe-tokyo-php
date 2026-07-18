@@ -2602,6 +2602,14 @@ var SEARCH_SERIES = [
   },
 
   {
+    btn: 'QUAD JBL',
+    label: 'QUAD JBL',
+    urls: [
+      'https://youtu.be/asjUC5y1bdg?si=noL5h_fNud9dJlv0'
+    ]
+  },
+
+  {
     btn: 'KRS 4351',
     label: 'World Class JBL Speakers 10th Anniv KENRICK SOUND 4351 & McIntosh MC901　憧れのサウンドがご自宅に！ケンリックサウンド10周年仕様',
     urls: [
