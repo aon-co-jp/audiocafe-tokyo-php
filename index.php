@@ -7516,7 +7516,7 @@ function forceRootHome(e){
         <?php if ($mlja): ?>
           <p style="margin:0 0 .8rem;line-height:1.7;color:#475569">
             /top ページには、がん治療法（体温の法則、40℃前後の温かいお風呂の効能）、
-            YouTube 音楽プレイヤー（歌手シリーズ、AI ジャンル検出）、会社概要（株式会社エーオン・ジャパン）、
+            YouTube 音楽プレイヤー（歌手シリーズ、AI ジャンル検出）、会社概要、
             多言語対応（130カ国語Google翻訳）などの包括的なコンテンツが含まれています。
           </p>
         <?php else: ?>
