@@ -3087,8 +3087,8 @@ var SEARCH_SERIES = [
   },
 
   {
-    btn: '歌心りえ',
-    label: 'RIE UTAGOKORO',
+    btn: 'RIE UTAGOKORO（歌心りえ）',
+    label: 'RIE UTAGOKORO（歌心りえ）',
     urls: [
       'https://www.youtube.com/watch?v=O1fY5NJlwCY&list=RDO1fY5NJlwCY&start_radio=1',
       'https://www.youtube.com/watch?v=vPGm2q79px4&list=RDvPGm2q79px4&start_radio=1',
