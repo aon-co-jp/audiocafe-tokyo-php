@@ -6,7 +6,9 @@
 
 PHP製のマルチコンテンツサイト。求人情報(`aruaru`/`aruaru-lady`)・楽天モバイル情報(`rakuten-mobile`)・会社案内(`top`)などを1つのVPS上でまとめて配信する。
 
-**技術スタックは意図的にPHP**——姉妹サイト`aruaru.tokyo`([aruaru-tokyo-server](https://github.com/aon-co-jp/aruaru-tokyo-server))はRust+Poemで実装されているが、これは「ドメインごとにスタックが異なってよい」という設計判断であり、統一・移行の予定はない。
+**姉妹ドメイン`aruaru.tokyo`([aruaru-tokyo-server](https://github.com/aon-co-jp/aruaru-tokyo-server))はRust+Poemで実装されており、ドメインごとにスタックが異なってよいという設計判断で統一の予定はない**。
+
+一方、この`audiocafe.tokyo`自体については、**同一ドメイン内でRustへの並行移植プロジェクト([audiocafe-tokyo-rust](https://github.com/aon-co-jp/audiocafe-tokyo-rust))が別リポジトリとして進行中**であり、既にトップページ(`/`)・`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`の4パスは本番`nginx`設定(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で`127.0.0.1:4400`のRustバイナリへプロキシされ実際に稼働中(詳細は`audiocafe-tokyo-rust/PORTING.md`のHANDOFFログ参照)。それ以外の全パス(`/top/`・`/cancer/`・`/Python/`・`/video/`・静的キャッシュJSON等)は引き続きこのリポジトリのPHP実装がそのまま処理している。cronによるキャッシュ自動更新(`*-cache.json`生成)も引き続きこのPHPリポジトリ側の責務。したがって「技術スタックは意図的にPHPで統一・移行の予定はない」という記述は本サイト自身については実態と異なるため、この節で訂正する。
 
 ## 技術スタック
 
@@ -28,11 +30,12 @@ scp -r <対象ファイル> conoha:/var/www/audiocafe.tokyo/<パス>
 ssh conoha "chown nginx:nginx /var/www/audiocafe.tokyo/<パス>"
 ```
 
-nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet's Encrypt実証明書、80番は443番へリダイレクト。
+nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet's Encrypt実証明書、80番は443番へリダイレクト。**ただし前節の通り`/`・`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`の4パスは同じvhostファイル内で`127.0.0.1:4400`(audiocafe-tokyo-rust)へのプロキシに切り替え済みのため、この4パスに限りPHP-FPMではなくRustバイナリが応答する。**この4パス以外(`/top/`・`/cancer/`・`/Python/`・`/video/`・キャッシュJSON配信等)は従来通りPHP-FPM経由。
 
 ## 関連プロジェクト
 
-- [aruaru-tokyo-server](https://github.com/aon-co-jp/aruaru-tokyo-server) — 姉妹サイト`aruaru.tokyo`(Rust+Poem製)。TOPページから`aruaru`/`aruaru-lady`両方の日本語版+多言語版へリンクし、`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`をミラーproxyでこのリポジトリのコンテンツへ橋渡ししている
+- [audiocafe-tokyo-rust](https://github.com/aon-co-jp/audiocafe-tokyo-rust) — この`audiocafe.tokyo`自体をRust+RPoemへ段階的に移行する並行移植プロジェクト。トップページ・`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`は既に本番でRust版へカットオーバー済み(`nginx`の`location`単位、`127.0.0.1:4400`)、それ以外のパスと全cron自動更新処理はこのPHPリポジトリが引き続き担当
+- [aruaru-tokyo-server](https://github.com/aon-co-jp/aruaru-tokyo-server) — 姉妹サイト`aruaru.tokyo`(Rust+Poem製、別ドメイン・別プロジェクト)。TOPページから`aruaru`/`aruaru-lady`両方の日本語版+多言語版へリンクし、`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`をミラーproxyでこのドメインのコンテンツへ橋渡ししている
 - [aruaru-easyweb](https://github.com/aon-co-jp/aruaru-easyweb) — ドメイン/HTTPS自動化・OTP認証サーバー(`easyweb.tokyo`)
 - [open-raid-z](https://github.com/aon-co-jp/open-raid-z) — 開発ルールの正本
 
@@ -93,6 +96,49 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
 
 
 ## HANDOFF(直近の作業ログ、上が最新)
+
+- **2026-07-20(続き) ヘルスチェック・セキュリティ点検・ドキュメント実態整合**:
+  ユーザー指示により、リポジトリ全体の健全性確認とドキュメント記述の実態整合を行った。
+  - **`php -l`構文チェック**: `Python/`以外の全33ファイルで実施、エラーなし。
+  - **セキュリティ**: `aruaru/index.php:26`で`ARUARU_CRON_KEY`(cron手動実行用の
+    秘密キー)が`'change-this-secret-2026'`という固定文字列で直接`define()`
+    されており、`OPENAI_API_KEY`/`GITHUB_TOKEN`/`GOOGLE_CSE_KEY`等の他の秘密情報
+    (すべて`getenv()`優先のパターン)と異なり環境変数から上書きする経路が無い
+    ままだった問題を修正。`getenv('ARUARU_CRON_KEY') ?: 'change-this-secret-2026'`
+    に変更し、他の秘密情報と同じ環境変数優先パターンに統一(公開リポジトリに
+    含まれる既知の値がそのまま本番の秘密キーとして使われ得る状態だったため)。
+    本番VPS側で`ARUARU_CRON_KEY`環境変数を実際に設定することを推奨。
+  - **open-easy-webとの連携確認**: `open-easy-web`リポジトリを調査した結果、
+    nginx vhostの規約(`/etc/nginx/conf.d/<domain>.conf`、ポート80→443
+    リダイレクト、Let's Encrypt証明書パス)はこのリポジトリのCLAUDE.mdの記述と
+    構造的に一致することを確認。ただし`audiocafe.tokyo`の実際のvhostファイルは
+    open-easy-webの自動生成(`gen-vhost.sh`)ではなく手動作成・手動管理であり、
+    open-easy-web側のドメイン登録レコードもユーザー指示で明示的に削除済み
+    (open-easy-web CLAUDE.md記載)——この点はopen-easy-web側の既知の運用実態であり、
+    本リポジトリの記述に矛盾は無い。
+  - **ドキュメントと実態の齟齬を修正(最重要)**: このCLAUDE.md/README.mdはこれまで
+    「技術スタックは意図的にPHP、統一・移行の予定はない」と記載していたが、
+    実際には`audiocafe-tokyo-rust`(別リポジトリ、Rust+RPoem)への並行移植が
+    2026-07-17から進行しており、2026-07-19時点で**トップページ・`/aruaru/`・
+    `/aruaru-lady/`・`/rakuten-mobile/`の4パスは本番nginx設定で既にRust版へ
+    カットオーバー済み**(`audiocafe-tokyo-rust/PORTING.md`のHANDOFFログで確認)。
+    この重大な事実がこのリポジトリのドキュメントに一切反映されていなかったため、
+    「役割」「デプロイ」「関連プロジェクト」の各節を実態に合わせて訂正した
+    (README.mdも同様に修正)。cron自動更新処理・`/top/`等の残りパスは引き続き
+    このPHPリポジトリの責務のまま。
+  - **個人情報**: `top/`配下の履歴書等は既に`.gitignore`で除外済み(現状維持)。
+    その他、DB接続情報・実メールアドレス・実電話番号のハードコードは見つからず
+    (grep調査済み)。`index.php`のトップページ言語カードには実在するブログ
+    URL(`ameblo.jp/www-aon`等)へのリンクが多数含まれるが、これはサイト運営者
+    自身が公開しているコンテンツへの導線であり、認証情報や個人を特定する
+    非公開情報の漏洩ではないため対象外と判断した。
+  - **検証**: `git status`はコミット前に確認、`php -l`は上記の通り全件成功。
+    本HANDOFF自体もコミット・push対象に含める。
+  - 次にすべきこと: (1) 本番VPSで`ARUARU_CRON_KEY`環境変数を実際に設定し、
+    公開リポジトリに含まれる暫定値がそのまま使われていないか確認すること、
+    (2) 今回のドキュメント整合はあくまで前提作業であり、`audiocafe-tokyo-rust`
+    側の残り移植(cron移植・多言語版対応等、同リポジトリのCLAUDE.md参照)が
+    本当の意味での「連携の完成」に向けた本体作業として残っている。
 
 - **2026-07-20 AIテクノロジーランキングの評価軸拡張(既存システムの再定義・再実装)**:
   ユーザー指示により、`aruaru/index.php`の既存AIテクノロジーランキング機構
