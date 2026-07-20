@@ -3079,6 +3079,14 @@ var SEARCH_SERIES = [
   },
   
   {
+    btn: '小田和正　たしかなこと',
+    label: '小田和正 たしかなこと',
+    urls: [
+      'https://www.youtube.com/results?search_query=%E5%B0%8F%E7%94%B0%E5%92%8C%E6%AD%A3+%E3%81%9F%E3%81%97%E3%81%8B%E3%81%AA%E3%81%93%E3%81%A8'
+    ]
+  },
+
+  {
     btn: '歌心りえ',
     label: 'RIE UTAGOKORO',
     urls: [
