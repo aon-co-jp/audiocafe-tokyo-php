@@ -94,5 +94,56 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
 
 ## HANDOFF(直近の作業ログ、上が最新)
 
+- **2026-07-20 AIテクノロジーランキングの評価軸拡張(既存システムの再定義・再実装)**:
+  ユーザー指示により、`aruaru/index.php`の既存AIテクノロジーランキング機構
+  （`aruaru_tech_*`関数群・`ai-tech-ranking-cache.json`、cron.php経由の日次更新）を
+  ゼロから作り直さず、既存スキーマを拡張する形で再実装した。
+  - **languages配列をTOP80→TOP100へ拡張**: ベースライン(`aruaru_tech_baseline_data()`)に
+    20言語(Visual Basic .NET・Delphi・Pascal・Apex・Rexx・AWK・Vala・Standard ML・Q#・
+    ReasonML・Odin・Gleam・Roc・Nix・Wren・Grain・Janet・Hare・Red・Squirrel)を追加し
+    ちょうど100件に到達（水増しなし、実在する言語のみ）。`aruaru_tech_build_top50()`の
+    `array_slice`上限をカテゴリ別に変更（language=100、framework/database=80のまま）。
+    **frameworks/databasesはTOP80のまま据え置き**（ユーザー要望は100件を「目指す」だったが、
+    今回は言語のみに対象を絞り、正直にスコープ外として記録する）。
+  - **新規評価軸14項目を追加**（`score_async`/`score_speed`/`score_security`/
+    `versionless_api_comment`/`score_ai_library`/`score_other_library`/`framework_note`/
+    `database_note`(aruaru-dbリンク付き)/`score_spec_change_resilience`/
+    `score_parallel_distributed`/`cockroachdb_similarity_comment`/
+    `snowflake_similarity_comment`/`aruaru_db_similarity_comment`/`total_score`）。
+    実装は`aruaru_tech_extended_knowledge_base()`(主要25言語の手動キュレーション)＋
+    `aruaru_tech_extended_heuristic()`(それ以外の言語向け、既存フィールドのキーワード
+    マッチングによるルールベース算出)の二段構成。`aruaru_tech_apply_extended_scoring()`が
+    `aruaru_tech_refresh_rankings()`内(cron項目[1/7]に統合、別項目は増やさず)で毎回
+    全行に適用され、`total_score`をランキングのソートキーとして`rank`を再採番する。
+  - **aruaru-llm連携**: `F:\open-runo\aruaru-llm`(Rust+Poem製、実在確認済み)へ
+    `aruaru_tech_call_aruaru_llm()`が実際にHTTP POST(`/v1/chat`、既定エンドポイント
+    `http://127.0.0.1:4600`、`ARUARU_LLM_ENDPOINT`環境変数で上書き可)する、スタブでない
+    本物の関数を実装。到達できればその応答で`aruaru_db_similarity_comment`を上書き、
+    到達不能(未起動等)なら1回の試行後に即座にルールベースへフォールバックしログに記録
+    （実機検証時は未起動のため毎回フォールバックを確認、`cron.log`に記録あり）。
+    aruaru-llm自体が「本物のニューラル推論ではなくルールベース」であることは
+    aruaru-llm側のCLAUDE.mdで開示済みであり、本リポジトリの表示側にもその限界を明記した。
+  - **事実と推測の混同防止**: `ranking_meta.extended_axes_note`と表示側(index.php本体の
+    黄色い注記ボックス)に「非同期/セキュリティ等の拡張スコアはStackOverflow等のリアルタイム
+    外部指標ではなく一般的な技術知見に基づくルールベース評価」である旨を明記。
+  - **表示側**: 言語テーブルに新規列(score系8列＋comment系5列)を追加し見出しを
+    「TOP80→TOP100」に更新。ページ上部にGitHubリポジトリ(README/CLAUDE.md)への
+    リンクも追加。
+  - **検証**: `php -l`成功。mbstring拡張が既定では未読込のPHP環境だったため
+    `-d extension_dir=... -d extension=php_mbstring.dll`を付けて`php -S`起動、
+    `curl`で実際にHTMLを取得し新規フィールド(`score_async`・`versionless_api_comment`・
+    `aruaru-db`リンク・`CockroachDB類似性`・`合計score`見出し・`TOP100`見出し)が
+    実際に本文へ出力されることを確認。生成された`ai-tech-ranking-cache.json`を
+    PHPで検証しlanguages=100件・frameworks=80件・databases=80件、
+    languages[0]の全26キー(旧12+新14)存在・`total_score`降順ソート済みを確認
+    （テスト実行時は外部ネットワーク(StackOverflow/DB-Engines/aruaru-llm)が
+    いずれも到達不能でベースラインのみの動作経路だったため、本番VPS環境での
+    外部データ取得込みの動作は次回本番反映時に別途確認が必要）。
+  - **既知の制約(正直な記録)**: (1) frameworks/databasesはTOP80のまま(languages
+    のみTOP100)。(2) aruaru-llmはこの開発機では未起動のため`aruaru_db_similarity_comment`
+    の実LLM応答上書きパスは未検証(コードはHTTPクライアントとして実装済みで、
+    到達可能な環境なら動作する設計)。(3) 新規スコアは一般知見ベースのルール評価であり
+    StackOverflow等のような実測値ではない(表示側に明記済み)。
+
 - **2026-07-16(続き)**: YouTube検索結果バグの根本修正完了。`fetchAndCollect`(シリーズボタン/イントロ/再検索経路)と`fetchSearchResultIds`(NEXT/ランダムプール経路)の両方でjina.aiスクレイプを撤廃し、検索URLは実際のYouTube検索結果ページへの直接遷移に統一。PHP構文チェック(`php -l`)・埋め込みJSの構文チェック(`node --check`、PHPタグ部分をプレースホルダ置換した上で検証)ともに成功、本番環境で200 OK・修正内容の反映を確認済み。
 - **2026-07-16**: リポジトリ初期化・ドキュメント整備(README/CLAUDE.md/PORTING.md新規作成)・全ファイルpush完了。

@@ -145,6 +145,26 @@ function aruaru_tech_baseline_data(): array {
         ["rank"=>78, "name"=>"T-SQL",           "team_dev"=>"高い",       "maintenance"=>"高い",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"超大規模",  "traits"=>"SQL Server・Azure SQL拡張SQL", "oss_note"=>"商用（Microsoft）", "async_support"=>"Service Brokerで非同期", "throughput_100k"=>"SQL Serverで大規模OLTP実績", "memory"=>"大容量必要", "ai_comment"=>"Microsoft SQL Server・Azure DB開発標準"],
         ["rank"=>79, "name"=>"Tcl",             "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"比較的簡単",   "speed"=>"普通",   "dev_scale"=>"小規模",   "traits"=>"スクリプト・EDAツール連携", "oss_note"=>"TclはOSS", "async_support"=>"イベントループ（Tk/非同期IO）", "throughput_100k"=>"主目的外", "memory"=>"小容量", "ai_comment"=>"EDA・CAD自動化・組込テストで現役"],
         ["rank"=>80, "name"=>"Forth",           "team_dev"=>"低い",       "maintenance"=>"難しい",               "beginner"=>"非常に難しい", "speed"=>"超高速", "dev_scale"=>"組込向け",  "traits"=>"スタック型・組込・ブートローダ", "oss_note"=>"gforthはOSS", "async_support"=>"主目的外", "throughput_100k"=>"主目的外", "memory"=>"極小", "ai_comment"=>"組込・ファームウェア・ブートローダに現役"],
+        ["rank"=>81, "name"=>"Visual Basic .NET","team_dev"=>"普通",       "maintenance"=>"普通",                 "beginner"=>"初心者向け",   "speed"=>"普通",   "dev_scale"=>"中規模",   "traits"=>".NET上のBASIC系・業務アプリ・COM連携", "oss_note"=>"コンパイラはOSS（.NET SDK）", "async_support"=>"Async/Awaitに対応", "throughput_100k"=>".NET基盤で中規模までは対応可", "memory"=>"中程度", "ai_comment"=>"レガシー業務システムの保守で現役"],
+        ["rank"=>82, "name"=>"Delphi (Object Pascal)","team_dev"=>"普通", "maintenance"=>"普通",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"中規模",   "traits"=>"RAD開発・Windowsデスクトップ業務アプリ", "oss_note"=>"商用（Embarcadero）、FreePascal/Lazarusは代替OSS", "async_support"=>"スレッド＋一部async拡張", "throughput_100k"=>"デスクトップ業務用途が中心", "memory"=>"中程度", "ai_comment"=>"銀行・行政の古いデスクトップ業務アプリで現役"],
+        ["rank"=>83, "name"=>"Pascal",           "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"初心者向け",   "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"教育用・構造化プログラミングの祖", "oss_note"=>"FreePascalはOSS", "async_support"=>"主目的外", "throughput_100k"=>"主目的外", "memory"=>"小容量", "ai_comment"=>"教育現場・組込の一部でいまも採用例あり"],
+        ["rank"=>84, "name"=>"Apex",             "team_dev"=>"普通",       "maintenance"=>"普通",                 "beginner"=>"中級向け",     "speed"=>"普通",   "dev_scale"=>"中規模",   "traits"=>"Salesforce専用・トリガー/バッチ処理", "oss_note"=>"商用（Salesforce専有）", "async_support"=>"Queueable/Future/Batchで非同期", "throughput_100k"=>"Salesforceガバナ制限内での大量処理", "memory"=>"中程度", "ai_comment"=>"Salesforce導入企業では必須スキル"],
+        ["rank"=>85, "name"=>"Rexx",             "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"比較的簡単",   "speed"=>"普通",   "dev_scale"=>"小規模",   "traits"=>"メインフレーム自動化・スクリプト", "oss_note"=>"Regina RexxはOSS", "async_support"=>"主目的外", "throughput_100k"=>"主目的外", "memory"=>"極小", "ai_comment"=>"IBMメインフレームの自動化スクリプトで現役"],
+        ["rank"=>86, "name"=>"AWK",              "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"比較的簡単",   "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"テキスト処理・ログ集計・ワンライナー", "oss_note"=>"GNU AwkはOSS（GPL）", "async_support"=>"主目的外", "throughput_100k"=>"ストリーム処理でログ集計は高速", "memory"=>"極小", "ai_comment"=>"サーバ運用のログ集計で今も現役の定番"],
+        ["rank"=>87, "name"=>"Vala",             "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"GObject向けC#風構文・GNOME開発", "oss_note"=>"ValaはOSS（LGPL）", "async_support"=>"async/awaitをネイティブサポート", "throughput_100k"=>"Cにコンパイルされ高速だが採用例は限定的", "memory"=>"小容量", "ai_comment"=>"GNOMEデスクトップアプリ開発の選択肢の一つ"],
+        ["rank"=>88, "name"=>"Standard ML",      "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"難しい",       "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"関数型言語研究・型理論の源流", "oss_note"=>"SML/NJ、MLtonともOSS", "async_support"=>"主目的外", "throughput_100k"=>"主目的外", "memory"=>"中程度", "ai_comment"=>"OCaml/Haskellの源流。学術研究で現役"],
+        ["rank"=>89, "name"=>"Q#",               "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"非常に難しい", "speed"=>"シミュレータ依存", "dev_scale"=>"小規模", "traits"=>"量子コンピューティング専用（Microsoft）", "oss_note"=>"QDKはOSS（MIT）", "async_support"=>"量子並列性が本質的に組み込まれる", "throughput_100k"=>"量子シミュレータの規模に依存・主目的外", "memory"=>"シミュレータ次第で大容量必要", "ai_comment"=>"量子アルゴリズム研究・実用化はまだ発展途上"],
+        ["rank"=>90, "name"=>"ReasonML",         "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"難しい",       "speed"=>"高速",   "dev_scale"=>"中規模",   "traits"=>"OCaml構文をJS/React向けに再設計", "oss_note"=>"ReasonML/ReScriptはOSS（MIT）", "async_support"=>"Promise/Lwtベースの非同期", "throughput_100k"=>"JSへコンパイルされフロント用途中心", "memory"=>"小容量", "ai_comment"=>"型安全なReact開発を志向したコミュニティ小規模言語"],
+        ["rank"=>91, "name"=>"Odin",             "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"中級向け",     "speed"=>"超高速", "dev_scale"=>"中規模",   "traits"=>"C代替志向・ゲーム/システムプログラミング", "oss_note"=>"OdinはOSS（BSD）", "async_support"=>"標準では最小限、明示的な並行処理を志向", "throughput_100k"=>"低レベル制御でハイスループット可能", "memory"=>"極小", "ai_comment"=>"Cのシンプルさとモダンな安全性を両立させる新興言語"],
+        ["rank"=>92, "name"=>"Gleam",            "team_dev"=>"低い",       "maintenance"=>"非常に高い",           "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"中規模",   "traits"=>"BEAM上の型安全言語・Erlang資産を活用", "oss_note"=>"GleamはOSS（Apache 2.0）", "async_support"=>"BEAM（Erlang VM）のアクターモデルを継承", "throughput_100k"=>"BEAM由来の並行性で高スループットを狙える", "memory"=>"小容量", "ai_comment"=>"型安全とErlang/OTPの堅牢性を両立させる新興言語"],
+        ["rank"=>93, "name"=>"Roc",              "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"高速コンパイル志向の純粋関数型言語", "oss_note"=>"RocはOSS（UPL）", "async_support"=>"タスク（Task）ベースの非同期モデルを開発中", "throughput_100k"=>"開発初期段階で実運用の実績は限定的", "memory"=>"小容量", "ai_comment"=>"Elmの思想を汎用言語へ拡張する開発中の新興言語"],
+        ["rank"=>94, "name"=>"Nix",              "team_dev"=>"普通",       "maintenance"=>"非常に高い",           "beginner"=>"難しい",       "speed"=>"評価言語のため主目的外", "dev_scale"=>"中規模", "traits"=>"宣言的パッケージ管理・再現可能ビルド専用言語", "oss_note"=>"NixはOSS（MIT）", "async_support"=>"主目的外（ビルド記述言語）", "throughput_100k"=>"主目的外", "memory"=>"小容量", "ai_comment"=>"再現性の高いインフラ構築で評価が高まる専用言語"],
+        ["rank"=>95, "name"=>"Wren",             "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"比較的簡単",   "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"組込みスクリプト・ゲームエンジン向け軽量言語", "oss_note"=>"WrenはOSS（MIT）", "async_support"=>"ファイバーによる協調的並行処理", "throughput_100k"=>"軽量組込用途中心・主目的外", "memory"=>"極小", "ai_comment"=>"Luaに似た軽量組込スクリプトの選択肢"],
+        ["rank"=>96, "name"=>"Grain",            "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"WebAssembly向け静的型関数型言語", "oss_note"=>"GrainはOSS（LGPL）", "async_support"=>"Promiseベースの非同期を開発中", "throughput_100k"=>"WASM実行でブラウザ/エッジ向け・発展途上", "memory"=>"極小", "ai_comment"=>"WebAssembly時代を見据えた新興関数型言語"],
+        ["rank"=>97, "name"=>"Janet",            "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"中級向け",     "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"組込み向けLisp方言・単一バイナリ配布", "oss_note"=>"JanetはOSS（MIT）", "async_support"=>"イベントループ・ファイバーで非同期対応", "throughput_100k"=>"組込・CLIツール中心・主目的外", "memory"=>"極小", "ai_comment"=>"軽量な組込みLisp。CLIツール作成で人気"],
+        ["rank"=>98, "name"=>"Hare",             "team_dev"=>"低い",       "maintenance"=>"高い",                 "beginner"=>"難しい",       "speed"=>"超高速", "dev_scale"=>"小規模",   "traits"=>"C代替志向のシステムプログラミング言語", "oss_note"=>"HareはOSS（MPL 2.0）", "async_support"=>"標準では最小限、シンプルさを優先", "throughput_100k"=>"低レベル制御でハイスループット可能", "memory"=>"極小", "ai_comment"=>"シンプルさと明示性を重視するC代替の新興言語"],
+        ["rank"=>99, "name"=>"Red",              "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"中級向け",     "speed"=>"普通",   "dev_scale"=>"小規模",   "traits"=>"Rebol系・単一バイナリでフルスタック開発を志向", "oss_note"=>"RedはOSS（BSL）", "async_support"=>"リアクティブ処理を志向", "throughput_100k"=>"主目的外", "memory"=>"極小", "ai_comment"=>"OS〜GUIまで単一言語で完結させる野心的プロジェクト"],
+        ["rank"=>100, "name"=>"Squirrel",        "team_dev"=>"低い",       "maintenance"=>"普通",                 "beginner"=>"比較的簡単",   "speed"=>"高速",   "dev_scale"=>"小規模",   "traits"=>"ゲーム組込みスクリプト・C++親和性", "oss_note"=>"SquirrelはOSS（MIT）", "async_support"=>"コルーチンをネイティブサポート", "throughput_100k"=>"ゲームロジック用途中心・主目的外", "memory"=>"極小", "ai_comment"=>"Left 4 Dead等で使われたゲーム組込スクリプト"],
     ];
 
     $frameworks = [
@@ -578,7 +598,9 @@ function aruaru_tech_build_top50(string $category, array $baselineRows, array $e
         $combined[$key] = $ext + $baseScore;
     }
     arsort($combined, SORT_NUMERIC);
-    $orderedKeys = array_slice(array_keys($combined), 0, 80);
+    // 言語カテゴリはベースライン100件を確保済みのためTOP100、FW/DBは従来通りTOP80（HANDOFF参照）
+    $limit = ($category === 'language') ? 100 : 80;
+    $orderedKeys = array_slice(array_keys($combined), 0, $limit);
 
     $out = [];
     $rank = 0;
@@ -616,6 +638,26 @@ function aruaru_tech_language_complete(array $row): bool
         }
     }
     return true;
+}
+
+/**
+ * 拡張評価軸（2026-07-20追加）が揃っているか。
+ * total_scoreは0も正当値になり得るためisset判定、他はempty判定。
+ */
+function aruaru_tech_language_extended_complete(array $row): bool
+{
+    $req = [
+        'score_async', 'score_speed', 'score_security', 'versionless_api_comment',
+        'score_ai_library', 'score_other_library', 'framework_note', 'database_note',
+        'score_spec_change_resilience', 'score_parallel_distributed',
+        'cockroachdb_similarity_comment', 'snowflake_similarity_comment', 'aruaru_db_similarity_comment',
+    ];
+    foreach ($req as $f) {
+        if (!array_key_exists($f, $row) || $row[$f] === '' || $row[$f] === null) {
+            return false;
+        }
+    }
+    return isset($row['total_score']);
 }
 
 function aruaru_tech_framework_complete(array $row): bool
@@ -783,6 +825,187 @@ function aruaru_tech_apply_ai_enrichment(string $category, array $rows): array
     return $rows;
 }
 
+/* =========================================================
+   ★ 拡張評価軸（2026-07-20追加、ユーザー指示による再定義）
+   非同期・ハイスピード・セキュリティ・VersionlessAPI・AI/その他ライブラリ・
+   フレームワーク/DB相性・仕様変更耐性・並列分散性・CockroachDB/Snowflake/
+   aruaru-db類似性・合計スコア。
+   ★ 正直な開示: これらのスコアは StackOverflow/DB-Engines のような
+   「実際にリアルタイム取得できる外部指標」ではなく、各言語について
+   一般的に広く知られた技術的特性（既存の async_support/traits/oss_note
+   等の記述、公式ドキュメント・コミュニティで広く共有されている評価傾向）
+   に基づく、ルールベースの知見スコアです。事実（外部API取得値）と
+   推測（知見ベース評価）を混同しないよう、ranking_meta.extended_axes_note
+   および表示側（index.php本体のHTML）に明記します。
+========================================================= */
+
+if (!defined('ARUARU_LLM_ENDPOINT')) {
+    // aruaru-llm（F:\open-runo\aruaru-llm、Rust+Poem製）のHTTPエンドポイント。
+    // 未起動/未到達の場合は自動でルールベースにフォールバックする。
+    define('ARUARU_LLM_ENDPOINT', getenv('ARUARU_LLM_ENDPOINT') ?: 'http://127.0.0.1:4600');
+}
+
+/**
+ * aruaru-llm（実在する自前サービス、F:\open-runo\aruaru-llm）の /v1/chat を実際に呼び出す。
+ * 本物のニューラル推論ではなくルールベースの意図分類サービスであることは
+ * aruaru-llm自身のCLAUDE.mdで開示済み。ここではその開示を継承しつつ、
+ * 「実際に呼べるなら呼ぶ」本物のHTTPクライアント関数として実装する
+ * （todo!()や固定文字列を返すだけのスタブではない）。
+ * 到達不能・タイムアウト・不正レスポンスの場合は正直にnullを返す。
+ */
+function aruaru_tech_call_aruaru_llm(string $message, string $tenant = 'audiocafe.tokyo', int $timeoutSec = 2): ?array
+{
+    $payload = json_encode(['message' => $message, 'tenant' => $tenant], JSON_UNESCAPED_UNICODE);
+    if ($payload === false) {
+        return null;
+    }
+    $ctx = stream_context_create([
+        'http' => [
+            'method' => 'POST',
+            'timeout' => $timeoutSec,
+            'header' => "Content-Type: application/json\r\nAccept: application/json\r\n",
+            'content' => $payload,
+            'ignore_errors' => true,
+        ],
+    ]);
+    $raw = @file_get_contents(rtrim(ARUARU_LLM_ENDPOINT, '/') . '/v1/chat', false, $ctx);
+    if ($raw === false || $raw === '') {
+        return null;
+    }
+    $resp = json_decode($raw, true);
+    if (!is_array($resp) || empty($resp['reply'])) {
+        return null;
+    }
+    return $resp;
+}
+
+/**
+ * 主要言語の拡張評価ナレッジベース（手動キュレーション、キーはaruaru_tech_norm_key）。
+ * ここに無い言語は aruaru_tech_extended_heuristic() でベースラインの既存記述
+ * （async_support/speed/traits/oss_note等）からルールベースで算出する。
+ * @return array<string, array<string, int|string>>
+ */
+function aruaru_tech_extended_knowledge_base(): array
+{
+    $db = static fn(string $note) => $note . '（相性検証用リファレンス実装: aruaru-db https://github.com/aon-co-jp/aruaru-db ）';
+    $rows = [
+        'typescript' => ['score_async'=>88,'score_speed'=>78,'score_security'=>82,'versionless_api_comment'=>'Next.js/HonoのAPIルートはパスやヘッダで容易にVersionless API化でき、型定義自体がバージョン管理・Gitのコミット履歴と強く結び付くため親和性が高い。','score_ai_library'=>72,'score_other_library'=>93,'framework_note'=>'TypeScript: Next.js / NestJS / Hono','database_note'=>$db('Prisma/Drizzle等の型安全ORMが充実し主要DBと広く連携可能'),'score_spec_change_resilience'=>85,'score_parallel_distributed'=>72,'cockroachdb_similarity_comment'=>'言語自体に分散合意機構はないが、型システムによる契約の厳格さはCockroachDBのスキーマ一貫性思想と親和的。','snowflake_similarity_comment'=>'Snowflakeのような宣言的・スキーマ中心の設計とは異なるが、型定義がスキーマ的な役割を担う点で発想は近い。','aruaru_db_similarity_comment'=>'aruaru-dbのRust製サーバに対し型安全なクライアントを書きやすく、フロント〜API境界の型共有という点で相性が良い。'],
+        'python' => ['score_async'=>75,'score_speed'=>55,'score_security'=>68,'versionless_api_comment'=>'FastAPIはパスバージョニングと非バージョニング設計の両方をサポートし、型ヒント＋Gitタグ運用との組み合わせが一般的。','score_ai_library'=>99,'score_other_library'=>90,'framework_note'=>'Python: Django / FastAPI','database_note'=>$db('SQLAlchemy等の成熟したORMがあり主要RDB/NoSQLとも広く連携'),'score_spec_change_resilience'=>60,'score_parallel_distributed'=>65,'cockroachdb_similarity_comment'=>'言語自体の分散機構はないが、Pythonから分散DBを操作するクライアントエコシステムは非常に成熟している。','snowflake_similarity_comment'=>'pandas/Sparkとの連携が強く、Snowflake上の大規模データ処理パイプライン言語として広く採用される。','aruaru_db_similarity_comment'=>'データ分析用途でaruaru-dbへの接続クライアントを書く言語として第一候補になりやすい。'],
+        'javascript' => ['score_async'=>85,'score_speed'=>70,'score_security'=>55,'versionless_api_comment'=>'ExpressベースのAPIはVersionless化しやすいが、型が無い分バージョン管理・Git運用側での契約管理の比重がTypeScriptより高くなる。','score_ai_library'=>60,'score_other_library'=>93,'framework_note'=>'JavaScript: Express / Next.js','database_note'=>$db('主要DB向けドライバ/ORMがほぼ全て揃うが型安全性はTypeScript移行を推奨'),'score_spec_change_resilience'=>45,'score_parallel_distributed'=>68,'cockroachdb_similarity_comment'=>'直接の類似性は薄いが、Node.jsの非同期I/Oモデルは分散システムのイベント駆動設計と親和性がある。','snowflake_similarity_comment'=>'直接の類似性はほぼ無く、主にダッシュボード/BIツールのフロント実装言語として関わる。','aruaru_db_similarity_comment'=>'フロントエンドからaruaru-dbのAPI層を呼び出す用途で使われることが多い。'],
+        'go' => ['score_async'=>90,'score_speed'=>90,'score_security'=>80,'versionless_api_comment'=>'Goのモジュールシステム（go.mod）はSemVerと密結合だが、APIパスのVersionless化自体は容易でGit運用とも親和性が高い。','score_ai_library'=>45,'score_other_library'=>75,'framework_note'=>'Go: Gin / Echo / Fiber','database_note'=>$db('database/sql標準＋各種ドライバが成熟し高スループットな接続プーリングが可能'),'score_spec_change_resilience'=>78,'score_parallel_distributed'=>92,'cockroachdb_similarity_comment'=>'CockroachDB自体がGoで実装されており、goroutine/channelによる並行処理モデルはCockroachDBの分散設計思想と直接的に近い。','snowflake_similarity_comment'=>'直接の類似性は薄いが、大規模データパイプラインのマイクロサービス実装言語として併用されることが多い。','aruaru_db_similarity_comment'=>'aruaru-db（Rust製）とは実装言語こそ異なるが、シンプルさと高スループット志向という設計思想は近い。'],
+        'rust' => ['score_async'=>93,'score_speed'=>98,'score_security'=>97,'versionless_api_comment'=>'Cargoのセマンティックバージョニングは厳格だが、Web APIのVersionless設計はAxum/Actixで容易に実現でき、型と借用チェッカーがバージョン間の破壊的変更を検出しやすい。','score_ai_library'=>55,'score_other_library'=>78,'framework_note'=>'Rust: Actix Web / Axum','database_note'=>$db('sqlx/SeaORM等コンパイル時検証付きの型安全クライアントが充実'),'score_spec_change_resilience'=>90,'score_parallel_distributed'=>90,'cockroachdb_similarity_comment'=>'メモリ安全性を保ちながら高スループットな分散処理を書ける点でCockroachDBが目指す信頼性設計と思想的に近い。','snowflake_similarity_comment'=>'直接の類似性は薄いが、高速なデータ処理基盤（例: DataFusion等）の実装言語として採用が増えている。','aruaru_db_similarity_comment'=>'aruaru-db自体がRust製であるため相性は最も高く、同一言語での型共有・エラーハンドリング統一が可能。'],
+        'java' => ['score_async'=>70,'score_speed'=>80,'score_security'=>83,'versionless_api_comment'=>'Spring BootのAPIバージョニングは伝統的にパス/ヘッダ方式が主流だが、契約テスト導入によりVersionless運用も可能。Mavenのバージョン管理とGitタグ運用の組み合わせが一般的。','score_ai_library'=>58,'score_other_library'=>95,'framework_note'=>'Java: Spring Boot / Micronaut / Quarkus','database_note'=>$db('JDBC＋Hibernate等の成熟したORMがあり大規模基幹システムでの実績が豊富'),'score_spec_change_resilience'=>80,'score_parallel_distributed'=>80,'cockroachdb_similarity_comment'=>'JVMの成熟した並行処理ライブラリ群は、CockroachDBのような分散トランザクション処理系のクライアント実装に向く。','snowflake_similarity_comment'=>'エンタープライズBI/ETL基盤（JDBC経由）としてSnowflakeとの連携実績が非常に豊富。','aruaru_db_similarity_comment'=>'大企業の既存Javaシステムからaruaru-dbへ接続するブリッジ役として現実的な選択肢。'],
+        'kotlin' => ['score_async'=>85,'score_speed'=>78,'score_security'=>84,'versionless_api_comment'=>'KtorのAPIはVersionless設計がしやすく、Null安全な型システムがバージョン間の破壊的変更検知に役立つ。','score_ai_library'=>40,'score_other_library'=>80,'framework_note'=>'Kotlin: Ktor / Spring Boot','database_note'=>$db('Exposed等のKotlin製ORMがあり、JVM資産のJDBCドライバもそのまま使える'),'score_spec_change_resilience'=>82,'score_parallel_distributed'=>78,'cockroachdb_similarity_comment'=>'コルーチンによる軽量並行処理は、CockroachDBのようなマルチノードDBへの高並列アクセスと相性が良い。','snowflake_similarity_comment'=>'直接の類似性は薄く、主にAndroid/バックエンドの実装言語としてBI基盤とは間接的に関わる。','aruaru_db_similarity_comment'=>'JVM経由でaruaru-dbクライアントを実装する際の型安全な選択肢。'],
+        'swift' => ['score_async'=>82,'score_speed'=>85,'score_security'=>85,'versionless_api_comment'=>'iOSアプリからのAPI呼び出しはVersionless設計が主流になりつつあり、Swift Package ManagerのSemVerとGit運用が密接。','score_ai_library'=>35,'score_other_library'=>60,'framework_note'=>'Swift: Vapor / SwiftUI','database_note'=>$db('Vapor Fluent等のORMを介してPostgreSQL等主要DBに接続可能'),'score_spec_change_resilience'=>75,'score_parallel_distributed'=>65,'cockroachdb_similarity_comment'=>'直接の類似性は薄いが、Swift ConcurrencyのActorモデルは分散DBのノード分離設計と発想が近い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'モバイルアプリからaruaru-db連携APIを呼び出すクライアント言語として使われる想定。'],
+        'c#' => ['score_async'=>90,'score_speed'=>82,'score_security'=>82,'versionless_api_comment'=>'ASP.NET CoreはAPI Versioning用ライブラリが充実する一方、Versionless設計もMinimal APIで容易。NuGetのSemVerとGit運用が定着。','score_ai_library'=>50,'score_other_library'=>90,'framework_note'=>'C#: ASP.NET Core / Blazor','database_note'=>$db('Entity Framework Core等の成熟したORMで主要DBと広く連携'),'score_spec_change_resilience'=>80,'score_parallel_distributed'=>78,'cockroachdb_similarity_comment'=>'async/awaitの成熟度は高く、分散トランザクション処理のクライアント実装に十分な性能を発揮できる。','snowflake_similarity_comment'=>'エンタープライズBIツールとの連携実績があり、間接的な親和性がある。','aruaru_db_similarity_comment'=>'.NET資産を持つ企業がaruaru-dbへ接続する際の現実的な選択肢。'],
+        'php' => ['score_async'=>50,'score_speed'=>60,'score_security'=>65,'versionless_api_comment'=>'Laravel/Symfonyでのバージョニングはパス方式が主流だが、Versionless API＋Gitタグでのリリース管理も一般的に採用される。','score_ai_library'=>25,'score_other_library'=>85,'framework_note'=>'PHP: Laravel / Symfony','database_note'=>$db('PDO/Eloquent等が成熟し中小規模Webサービスとの相性が良い'),'score_spec_change_resilience'=>55,'score_parallel_distributed'=>40,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無く、PHPは主に単一リクエスト完結型のWeb処理が中心。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'既存のPHP資産（本リポジトリ含む）からaruaru-dbのクライアントを実装する際の橋渡し役になり得る。'],
+        'ruby' => ['score_async'=>55,'score_speed'=>50,'score_security'=>60,'versionless_api_comment'=>'Rails APIモードはバージョニング用gemが豊富だが、Versionless設計＋Gitのタグ運用に寄せることも多い。','score_ai_library'=>30,'score_other_library'=>78,'framework_note'=>'Ruby: Ruby on Rails','database_note'=>$db('ActiveRecordが非常に成熟し主要RDBとの相性は良い'),'score_spec_change_resilience'=>50,'score_parallel_distributed'=>35,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'スタートアップ文化との親和性が高く、aruaru-dbを使う小規模サービスの初期実装言語になり得る。'],
+        'c++' => ['score_async'=>70,'score_speed'=>97,'score_security'=>55,'versionless_api_comment'=>'言語自体にAPIの概念は薄いが、ABI互換性維持の考え方はVersionless設計・Git上のタグ運用と密接に関わる。','score_ai_library'=>65,'score_other_library'=>70,'framework_note'=>'C++: Qt / Boost.Beast','database_note'=>$db('libpqxx等の低レベルドライバで高速アクセスが可能だが実装コストは高め'),'score_spec_change_resilience'=>60,'score_parallel_distributed'=>80,'cockroachdb_similarity_comment'=>'低レベル制御による高性能分散処理の実装言語として、ストレージエンジン層での親和性がある。','snowflake_similarity_comment'=>'直接の類似性は薄いが、高速な数値計算エンジンの実装言語として間接的に関わる。','aruaru_db_similarity_comment'=>'高速なネイティブクライアントが必要な場面でのaruaru-db接続実装候補。'],
+        'c' => ['score_async'=>40,'score_speed'=>99,'score_security'=>40,'versionless_api_comment'=>'言語自体にAPIバージョニングの概念は無く、ヘッダファイルとABI互換性の管理がGit運用に強く依存する。','score_ai_library'=>30,'score_other_library'=>50,'framework_note'=>'C: libuv / libpq（低レベルドライバ）','database_note'=>$db('低レベルドライバ経由で最速アクセスが可能だが安全性は開発者依存'),'score_spec_change_resilience'=>35,'score_parallel_distributed'=>60,'cockroachdb_similarity_comment'=>'直接の類似性は薄いが、多くのDBエンジン自体がCまたはC系言語で実装されてきた歴史的経緯がある。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'最速のネイティブクライアントを書く必要がある特殊用途での選択肢。'],
+        'scala' => ['score_async'=>82,'score_speed'=>80,'score_security'=>78,'versionless_api_comment'=>'Akka HTTP等でのVersionless API設計は容易で、強力な型システムが破壊的変更の検知に貢献する。','score_ai_library'=>55,'score_other_library'=>82,'framework_note'=>'Scala: Akka HTTP / Play Framework','database_note'=>$db('Slick等のORMでJVM資産のJDBCドライバを型安全に利用可能'),'score_spec_change_resilience'=>82,'score_parallel_distributed'=>88,'cockroachdb_similarity_comment'=>'Akkaのアクターモデルは分散合意・耐障害設計という点でCockroachDBの思想と親和的。','snowflake_similarity_comment'=>'Spark（Scala製）の主要言語であり、Snowflakeとのデータパイプライン連携実績が豊富。','aruaru_db_similarity_comment'=>'大規模分散データ処理パイプラインからaruaru-dbへ接続する用途に向く。'],
+        'elixir' => ['score_async'=>95,'score_speed'=>75,'score_security'=>75,'versionless_api_comment'=>'Phoenixの設計思想はVersionless APIと親和性が高く、BEAMのホットコードスワップはバージョン管理の考え方自体を柔軟にする。','score_ai_library'=>25,'score_other_library'=>55,'framework_note'=>'Elixir: Phoenix','database_note'=>$db('Ectoが成熟しPostgreSQLとの相性は特に良い'),'score_spec_change_resilience'=>78,'score_parallel_distributed'=>93,'cockroachdb_similarity_comment'=>'BEAM由来の軽量プロセス・分散ノード間通信はCockroachDBの分散合意アーキテクチャと発想が非常に近い。','snowflake_similarity_comment'=>'直接の類似性は薄い。','aruaru_db_similarity_comment'=>'大量の同時接続をさばくリアルタイムアプリからaruaru-dbへ接続する用途に適する。'],
+        'erlang' => ['score_async'=>95,'score_speed'=>72,'score_security'=>75,'versionless_api_comment'=>'OTPのホットコードローディングはバージョンレスな運用と極めて親和性が高い、業界でも先駆的な設計。','score_ai_library'=>20,'score_other_library'=>45,'framework_note'=>'Erlang: Cowboy','database_note'=>$db('Mnesia等の組込DBを持つが外部RDB連携はドライバ経由'),'score_spec_change_resilience'=>75,'score_parallel_distributed'=>95,'cockroachdb_similarity_comment'=>'「Let it crash」思想と分散耐障害設計は、CockroachDBの自己修復型アーキテクチャと極めて近い発想。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'超高並列の通信基盤（電話交換機由来）としての知見はaruaru-dbの高負荷設計と参考になり得る。'],
+        'dart' => ['score_async'=>85,'score_speed'=>70,'score_security'=>70,'versionless_api_comment'=>'Flutterアプリからの通信はVersionless設計が主流で、pub.devのSemVer運用がGitタグと連動する。','score_ai_library'=>25,'score_other_library'=>60,'framework_note'=>'Dart: Flutter','database_note'=>$db('drift等のORMでSQLiteとの相性が良い'),'score_spec_change_resilience'=>65,'score_parallel_distributed'=>55,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'モバイルアプリからaruaru-dbへ接続するクライアント言語として使われる想定。'],
+        'haskell' => ['score_async'=>78,'score_speed'=>75,'score_security'=>88,'versionless_api_comment'=>'型クラスによる契約の厳格さはVersionless API設計時の後方互換性検証に強く貢献する。','score_ai_library'=>30,'score_other_library'=>50,'framework_note'=>'Haskell: Servant / Yesod','database_note'=>$db('Persistent/Esqueleto等の型安全ORMがある'),'score_spec_change_resilience'=>88,'score_parallel_distributed'=>75,'cockroachdb_similarity_comment'=>'STM（ソフトウェアトランザクショナルメモリ）の思想は分散トランザクションの整合性設計と親和的。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'型安全性を重視する開発チームがaruaru-dbクライアントの正しさを検証する用途に向く。'],
+        'perl' => ['score_async'=>45,'score_speed'=>55,'score_security'=>45,'versionless_api_comment'=>'古典的なCGI/Mojoliciousの設計ではAPIバージョニングは手動管理が中心で、Git運用への依存度が高い。','score_ai_library'=>15,'score_other_library'=>65,'framework_note'=>'Perl: Mojolicious','database_note'=>$db('DBIが長年の実績を持ち主要DBに広く対応'),'score_spec_change_resilience'=>40,'score_parallel_distributed'=>30,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'レガシーシステムの保守スクリプトからaruaru-dbへ接続する用途は限定的。'],
+        'lua' => ['score_async'=>60,'score_speed'=>78,'score_security'=>55,'versionless_api_comment'=>'組込みスクリプトとしての性質上APIバージョニングの概念は薄く、ホストアプリ側のGit管理に依存する。','score_ai_library'=>15,'score_other_library'=>40,'framework_note'=>'Lua: OpenResty','database_note'=>$db('LuaSQL等のドライバがあるが用途は組込み・ゲーム中心'),'score_spec_change_resilience'=>45,'score_parallel_distributed'=>35,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'組込み用途中心のためaruaru-dbとの直接連携は限定的。'],
+        'clojure' => ['score_async'=>75,'score_speed'=>72,'score_security'=>75,'versionless_api_comment'=>'不変データ構造とマルチバーシティ設計はVersionless APIの後方互換性維持と相性が良い。','score_ai_library'=>35,'score_other_library'=>60,'framework_note'=>'Clojure: Ring / Compojure','database_note'=>$db('JVM資産のJDBCドライバをそのまま利用可能'),'score_spec_change_resilience'=>78,'score_parallel_distributed'=>75,'cockroachdb_similarity_comment'=>'STM等の並行処理プリミティブは分散システムの整合性設計と発想が近い。','snowflake_similarity_comment'=>'直接の類似性は薄い。','aruaru_db_similarity_comment'=>'JVM経由でaruaru-dbクライアントを実装する選択肢の一つ。'],
+        'f#' => ['score_async'=>82,'score_speed'=>78,'score_security'=>80,'versionless_api_comment'=>'代数的データ型による厳格な型付けはVersionless API設計時の破壊的変更検知に貢献する。','score_ai_library'=>40,'score_other_library'=>75,'framework_note'=>'F#: Giraffe / Saturn','database_note'=>$db('.NET資産のEntity Framework Core等をそのまま利用可能'),'score_spec_change_resilience'=>82,'score_parallel_distributed'=>72,'cockroachdb_similarity_comment'=>'直接の類似性は薄い。','snowflake_similarity_comment'=>'直接の類似性は薄い。','aruaru_db_similarity_comment'=>'.NET資産を持つチームの型安全なaruaru-dbクライアント実装候補。'],
+        'zig' => ['score_async'=>75,'score_speed'=>96,'score_security'=>78,'versionless_api_comment'=>'言語自体は若くAPIバージョニングの慣習はまだ確立途上で、Gitのタグ運用にほぼ全面的に依存する。','score_ai_library'=>20,'score_other_library'=>35,'framework_note'=>'Zig: 標準ライブラリ中心（Web FWは発展途上）','database_note'=>$db('CのDBクライアントをFFI経由でそのまま呼び出せる'),'score_spec_change_resilience'=>55,'score_parallel_distributed'=>60,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'低レベル制御で最速のクライアントを書ける可能性はあるがエコシステムはまだ小さい。'],
+        'solidity' => ['score_async'=>30,'score_speed'=>40,'score_security'=>60,'versionless_api_comment'=>'デプロイ済みスマートコントラクトは原理的にVersionlessではなく、アップグレード可能パターン（Proxy）とGitでのソース管理が併用される。','score_ai_library'=>10,'score_other_library'=>45,'framework_note'=>'Solidity: Hardhat / Foundry','database_note'=>$db('オンチェーンデータのため従来型DBとは異質だがインデクサ経由で連携可能'),'score_spec_change_resilience'=>30,'score_parallel_distributed'=>25,'cockroachdb_similarity_comment'=>'直接の類似性はほぼ無い。','snowflake_similarity_comment'=>'直接の類似性はほぼ無い。','aruaru_db_similarity_comment'=>'オンチェーンイベントをインデックスしaruaru-dbへ格納する用途で間接的に関わる。'],
+        'sql' => ['score_async'=>40,'score_speed'=>65,'score_security'=>70,'versionless_api_comment'=>'SQL自体はAPIではないためVersionlessの概念は薄いが、マイグレーションファイルのGit管理は必須の実務慣行。','score_ai_library'=>20,'score_other_library'=>60,'framework_note'=>'SQL: dbt（データ変換パイプライン）','database_note'=>$db('すべてのRDBの共通言語であり相性の概念そのものが前提'),'score_spec_change_resilience'=>50,'score_parallel_distributed'=>50,'cockroachdb_similarity_comment'=>'CockroachDBはPostgreSQL互換のSQL方言を採用しており直接的に高い親和性がある。','snowflake_similarity_comment'=>'SnowflakeもSQLを主要インターフェースとしており直接的に高い親和性がある。','aruaru_db_similarity_comment'=>'aruaru-dbがpgwireプロトコル（PostgreSQL互換）である場合、標準SQLがそのまま通用する可能性が高い。'],
+    ];
+    return $rows;
+}
+
+/**
+ * ナレッジベースに無い言語向けのルールベース算出（既存フィールドの記述から
+ * キーワードマッチングでスコアを導出する。実測値ではなく推測ベースである
+ * ことを明示するため、表示側の注記と合わせて運用する）。
+ */
+function aruaru_tech_extended_heuristic(array $row): array
+{
+    $name = (string)($row['name'] ?? '');
+    $text = implode(' ', [
+        (string)($row['async_support'] ?? ''), (string)($row['traits'] ?? ''),
+        (string)($row['oss_note'] ?? ''), (string)($row['speed'] ?? ''),
+        (string)($row['throughput_100k'] ?? ''), (string)($row['maintenance'] ?? ''),
+        (string)($row['dev_scale'] ?? ''),
+    ]);
+
+    $score = static function (string $text, array $pos, array $neg, int $base) {
+        $s = $base;
+        foreach ($pos as $kw) {
+            if (stripos($text, $kw) !== false) $s += 12;
+        }
+        foreach ($neg as $kw) {
+            if (stripos($text, $kw) !== false) $s -= 15;
+        }
+        return max(5, min(100, $s));
+    };
+
+    $scoreAsync = $score($text, ['async', 'await', '非同期', 'イベントループ', 'goroutine', 'アクター', 'コルーチン', 'Promise', '並行'], ['主目的外', '同期'], 50);
+    $scoreSpeed = $score($text, ['高速', '超高速', '最高速', 'ネイティブ', 'コンパイル'], ['遅い', '普通'], 55);
+    $scoreSecurity = $score($text, ['型安全', '静的型', 'メモリ安全', '証明', '検証'], ['手動', '脆弱', 'GIL'], 50);
+    $scoreAiLib = $score($text, ['AI', 'ML', '機械学習', 'データ', '記号計算', '数式'], [], 30);
+    $scoreOtherLib = $score($text, ['豊富', 'エコシステム', 'パッケージ', 'ライブラリ', '標準'], ['限定的', '発展途上'], 45);
+    $scoreSpecResil = $score($text, ['型安全', '静的型', 'テスト', '証明', '検証'], ['スクリプト', '動的'], 45);
+    $scoreParallel = $score($text, ['並列', '分散', 'goroutine', 'アクター', 'マルチスレッド', '並行'], ['単一', '主目的外'], 45);
+
+    return [
+        'score_async' => $scoreAsync,
+        'score_speed' => $scoreSpeed,
+        'score_security' => $scoreSecurity,
+        'versionless_api_comment' => "{$name}向けのVersionlessAPI設計は言語自体の制約より採用するWebフレームワーク次第。バージョン管理・Git運用との親和性は一般的なテキスト形式ソース管理の恩恵をそのまま受けられる（詳細は個別調査を推奨）。",
+        'score_ai_library' => $scoreAiLib,
+        'score_other_library' => $scoreOtherLib,
+        'framework_note' => "{$name}: 主要フレームワークは要調査（公式ドキュメント・パッケージレジストリを参照）",
+        'database_note' => "{$name}からのDB接続は標準/サードパーティドライバ経由が一般的（詳細な相性は要調査）。参考実装: aruaru-db https://github.com/aon-co-jp/aruaru-db 。",
+        'score_spec_change_resilience' => $scoreSpecResil,
+        'score_parallel_distributed' => $scoreParallel,
+        'cockroachdb_similarity_comment' => "{$name}自体は分散データベースではないため直接の類似性は薄い（要調査）。",
+        'snowflake_similarity_comment' => "{$name}自体はデータウェアハウスではないため直接の類似性は薄い（要調査）。",
+        'aruaru_db_similarity_comment' => "{$name}とaruaru-db（https://github.com/aon-co-jp/aruaru-db ）の具体的な類似性・接続実績は要調査。",
+    ];
+}
+
+/**
+ * languages配列の全行に拡張評価軸を付与する（cron.php経由の日次リフレッシュで毎回再評価）。
+ * ナレッジベース優先、無ければヒューリスティック。aruaru-llmが到達可能なら
+ * aruaru_db_similarity_commentの一部を実際のHTTP応答で上書きする（実在確認済み・
+ * 呼び出し可能な本物の関数を使用。既定は不到達time-outで即フォールバック）。
+ */
+function aruaru_tech_apply_extended_scoring(array $rows, bool $verbose = false): array
+{
+    $kb = aruaru_tech_extended_knowledge_base();
+    static $llmReachable = null;
+
+    foreach ($rows as $i => $row) {
+        $key = aruaru_tech_norm_key((string)($row['name'] ?? ''));
+        $ext = $kb[$key] ?? aruaru_tech_extended_heuristic($row);
+
+        if ($llmReachable !== false) {
+            $name = (string)($row['name'] ?? '');
+            $reply = aruaru_tech_call_aruaru_llm("{$name}とaruaru-dbの類似性を一言で");
+            if ($reply !== null) {
+                $llmReachable = true;
+                $ext['aruaru_db_similarity_comment'] = '[aruaru-llm:' . (string)($reply['engine'] ?? 'rule-based-v0') . '] ' . (string)$reply['reply'];
+            } elseif ($llmReachable === null) {
+                $llmReachable = false;
+                aruaru_tech_sync_log('aruaru-llm 未到達（' . ARUARU_LLM_ENDPOINT . '）— ルールベースにフォールバック', $verbose);
+            }
+        }
+
+        $merged = array_merge($row, $ext);
+        $total = (int)$merged['score_async'] + (int)$merged['score_speed'] + (int)$merged['score_security']
+            + (int)$merged['score_ai_library'] + (int)$merged['score_other_library']
+            + (int)$merged['score_spec_change_resilience'] + (int)$merged['score_parallel_distributed'];
+        $merged['total_score'] = $total;
+        $rows[$i] = $merged;
+    }
+    return $rows;
+}
+
 /** メイン: 外部ランキング + AI補完 → キャッシュ用データ */
 function aruaru_tech_refresh_rankings(bool $verbose = false): array
 {
@@ -791,11 +1014,17 @@ function aruaru_tech_refresh_rankings(bool $verbose = false): array
 
     if (empty($external['languages']) && empty($external['frameworks']) && empty($external['databases'])) {
         aruaru_tech_sync_log('外部データ取得失敗 — ベースラインのみ保存', $verbose);
+        $baseline['languages'] = aruaru_tech_apply_extended_scoring($baseline['languages'], $verbose);
+        usort($baseline['languages'], static fn($a, $b) => ($b['total_score'] ?? 0) <=> ($a['total_score'] ?? 0));
+        foreach ($baseline['languages'] as $i => $row) {
+            $baseline['languages'][$i]['rank'] = $i + 1;
+        }
         $baseline['ranking_meta'] = [
             'sources' => ['baseline-only'],
             'fetched_at' => date('c'),
             'openai_used' => false,
             'errors' => $external['errors'],
+            'extended_axes_note' => '非同期/セキュリティ/AIライブラリ等の拡張スコアはStackOverflow等のリアルタイム外部指標ではなく、一般的な技術知見に基づくルールベース評価です。',
         ];
         return $baseline;
     }
@@ -812,6 +1041,14 @@ function aruaru_tech_refresh_rankings(bool $verbose = false): array
     $newLang = count(array_filter($languages, static function ($r) {
         return strpos((string)($r['ai_comment'] ?? ''), '外部データで検出') !== false;
     }));
+    // 拡張評価軸（非同期/セキュリティ/AIライブラリ等）を毎回再評価して付与（[9/8]相当の項目、cron-all統合）
+    $languages = aruaru_tech_apply_extended_scoring($languages, $verbose);
+    // total_score（拡張評価軸の合計）をランキングのソートキーとして再採番
+    usort($languages, static fn($a, $b) => ($b['total_score'] ?? 0) <=> ($a['total_score'] ?? 0));
+    foreach ($languages as $i => $row) {
+        $languages[$i]['rank'] = $i + 1;
+    }
+
     aruaru_tech_sync_log(
         '同期完了: 言語' . count($languages) . ' / FW' . count($frameworks) . ' / DB' . count($databases)
         . ' / ソース: ' . implode(', ', $external['sources']),
@@ -830,6 +1067,7 @@ function aruaru_tech_refresh_rankings(bool $verbose = false): array
             'github_token' => GITHUB_TOKEN !== '',
             'errors' => $external['errors'],
             'note' => '順位は Stack Overflow / DB-Engines 等の外部人気データとベースラインを合成。紹介文の新規生成は OpenAI（キー設定時）。',
+            'extended_axes_note' => '非同期/ハイスピード/セキュリティ/AIライブラリ/その他ライブラリ/仕様変更耐性/並列分散性の各スコアと各種類似性コメントは、StackOverflow/DB-Enginesのようなリアルタイム外部指標ではなく、一般的に広く知られた技術的特性・コミュニティでの評価傾向に基づくルールベース評価です（一部、aruaru-llm https://github.com/aon-co-jp/aruaru-llm への実HTTP問い合わせが成功した場合はその応答を反映、aruaru-llm自体も現状はルールベースの意図分類であり本物のニューラル推論ではないことをaruaru-llm側のCLAUDE.mdで開示済み）。',
         ],
     ];
 }
@@ -7553,10 +7791,11 @@ $lang0 = is_array($AI_TECH_DATA) ? ($AI_TECH_DATA['languages'][0] ?? null) : nul
 $fw0  = is_array($AI_TECH_DATA) ? ($AI_TECH_DATA['frameworks'][0] ?? null) : null;
 $db0  = is_array($AI_TECH_DATA) ? ($AI_TECH_DATA['databases'][0] ?? null) : null;
 $ai_tech_cache_incomplete = !is_array($AI_TECH_DATA)
-    || count($AI_TECH_DATA['languages'] ?? []) < 80
+    || count($AI_TECH_DATA['languages'] ?? []) < 100
     || count($AI_TECH_DATA['frameworks'] ?? []) < 80
     || count($AI_TECH_DATA['databases'] ?? []) < 80
     || !is_array($lang0) || !isset($lang0['dev_scale']) || !isset($lang0['memory'])
+    || !is_array($lang0) || !function_exists('aruaru_tech_language_extended_complete') || !aruaru_tech_language_extended_complete($lang0)
     || !is_array($fw0) || !isset($fw0['memory'])
     || !is_array($db0) || !isset($db0['memory']);
 $ai_tech_cache_old = file_exists(AI_TECH_CACHE) && (time() - filemtime(AI_TECH_CACHE) > 86400);
@@ -7848,7 +8087,7 @@ $aruaru_learn_panel = aruaru_learning_ai_merge_panel($aruaru_learn_panel);
     </div>
 
 <h2 style="font-size:28px;color:#00ffff;" id="aruaru-top80-tech">
-🚀 人気TOP80 技術ランキング（AI自動分析）
+🚀 人気TOP100 技術ランキング（AI自動分析・拡張評価軸つき）
 </h2>
 <p style="opacity:.7;font-size:15px;">
   🕐 最終更新: <?= h(aru_update_label($updated_at)) ?>
@@ -7856,13 +8095,25 @@ $aruaru_learn_panel = aruaru_learning_ai_merge_panel($aruaru_learn_panel);
     <br>📡 順位根拠: <?= htmlspecialchars(implode(' + ', $aruaru_ranking_meta['sources'])) ?>
     <?php if (!empty($aruaru_ranking_meta['openai_used'])): ?> · AI紹介文生成ON<?php elseif (OPENAI_API_KEY === ''): ?> · <span style="color:#fbbf24">OPENAI_API_KEY未設定（新規項目は簡易表示）</span><?php endif; ?>
   <?php endif; ?>
+  <br>ℹ️ このセクションの実装詳細・データの正直な限界は
+  <a href="https://github.com/aon-co-jp/audiocafe-tokyo" target="_blank" rel="noopener" style="color:#67e8f9;">GitHubリポジトリ(README/CLAUDE.md)</a>
+  を参照してください。
 </p>
 
-<h3 style="color:#00ffaa;margin-top:30px;" id="aruaru-top80-lang">💻 人気プログラミング言語 TOP80</h3>
+<?php if (!empty($aruaru_ranking_meta['extended_axes_note'])): ?>
+<div style="margin:12px 0 18px;padding:12px 16px;border-radius:10px;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.35);font-size:13.5px;line-height:1.7;color:#fde68a;">
+  ⚠️ <strong>拡張評価軸（非同期・ハイスピード・セキュリティ・AI/その他ライブラリ・仕様変更耐性・並列分散性・各種類似性コメント）について:</strong>
+  <?= htmlspecialchars($aruaru_ranking_meta['extended_axes_note']) ?>
+</div>
+<?php endif; ?>
+
+<h3 style="color:#00ffaa;margin-top:30px;" id="aruaru-top80-lang">💻 人気プログラミング言語 TOP100（拡張評価軸つき）</h3>
 <div style="overflow:auto;">
 <table style="width:100%;border-collapse:collapse;font-size:15px;">
 <tr style="background:#10233f;text-align:left;">
 <th style="padding:8px;">順位</th><th style="padding:8px;">言語</th><th style="padding:8px;">チーム開発</th><th style="padding:8px;">保守性</th><th style="padding:8px;">初心者向け</th><th style="padding:8px;">速度</th><th style="padding:8px;">必要メモリ容量</th><th style="padding:8px;max-width:7rem;">開発規模</th><th style="padding:8px;max-width:12rem;">特徴</th><th style="padding:8px;max-width:12rem;">オープンソース</th><th style="padding:8px;max-width:10rem;">非同期対応</th><th style="padding:8px;max-width:10rem;">一秒間に10万件<br>処理対応</th><th style="padding:8px;min-width:10rem;">AI分析コメント</th>
+<th style="padding:8px;">非同期<br>score</th><th style="padding:8px;">ハイスピード<br>score</th><th style="padding:8px;">セキュリティ<br>score</th><th style="padding:8px;">AIライブラリ<br>score</th><th style="padding:8px;">その他ライブラリ<br>score</th><th style="padding:8px;">仕様変更耐性<br>score</th><th style="padding:8px;">並列/分散<br>score</th><th style="padding:8px;color:#fbbf24;">合計score</th>
+<th style="padding:8px;max-width:12rem;">VersionlessAPI/バージョン管理</th><th style="padding:8px;max-width:10rem;">フレームワーク</th><th style="padding:8px;max-width:12rem;">データベース相性</th><th style="padding:8px;max-width:10rem;">CockroachDB類似性</th><th style="padding:8px;max-width:10rem;">Snowflake類似性</th><th style="padding:8px;max-width:10rem;">aruaru-db類似性</th>
 </tr>
 <?php foreach($AI_TECH_DATA['languages'] as $item): ?>
 <?php $aruaru_row_id = aruaru_anchor_id_for_tech('lang', (string)$item['name']); ?>
@@ -7880,6 +8131,20 @@ $aruaru_learn_panel = aruaru_learning_ai_merge_panel($aruaru_learn_panel);
 <td style="padding:6px 8px;"><?= htmlspecialchars($item['async_support'] ?? '—') ?></td>
 <td style="padding:6px 8px;"><?= htmlspecialchars($item['throughput_100k'] ?? '—') ?></td>
 <td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['ai_comment']) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_async'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_speed'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_security'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_ai_library'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_other_library'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_spec_change_resilience'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;"><?= htmlspecialchars((string)($item['score_parallel_distributed'] ?? '—')) ?></td>
+<td style="padding:6px 8px;text-align:center;font-weight:bold;color:#fbbf24;"><?= htmlspecialchars((string)($item['total_score'] ?? '—')) ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['versionless_api_comment'] ?? '—') ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['framework_note'] ?? '—') ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['database_note'] ?? '—') ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['cockroachdb_similarity_comment'] ?? '—') ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['snowflake_similarity_comment'] ?? '—') ?></td>
+<td style="padding:6px 8px;opacity:.85;"><?= htmlspecialchars($item['aruaru_db_similarity_comment'] ?? '—') ?></td>
 </tr>
 <?php endforeach; ?>
 <tr id="<?= htmlspecialchars(aruaru_anchor_id_for_tech('lang', 'Mojo'), ENT_QUOTES, 'UTF-8') ?>" style="border-bottom:1px solid #1e3555;background:rgba(167,139,250,.1);">
