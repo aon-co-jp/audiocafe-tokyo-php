@@ -3070,7 +3070,7 @@ var SEARCH_SERIES = [
  
 {
     btn: '自民',
-    label: '国際的に、戦争屋の一層で自民党も解体',
+    label: '国際的に、戦争屋の一掃で自民党も解体か？',
     urls: [
       'https://www.youtube.com/watch?v=0OGm-P-1wpg'
     ]
