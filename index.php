@@ -2671,7 +2671,7 @@ var SEARCH_SERIES = [
 
   {
     btn: '牛糞の堆肥（たいひ）化　循環農法　有機土壌　米ぬか　納豆菌　酵母菌　乳酸菌',
-    label: '懸垂式モノレール',
+    label: '牛糞の堆肥（たいひ）化',
     urls: [
       'https://www.youtube.com/results?search_query=%E7%89%9B%E7%B3%9E%E3%81%AE%E5%A0%86%E8%82%A5%EF%BC%88%E3%81%9F%E3%81%84%E3%81%B2%EF%BC%89%E5%8C%96%E3%80%80%E6%B3%A8%E6%84%8F%E3%80%80%E3%83%90%E3%82%AF%E3%83%81%E3%83%A3%E3%83%BC%E3%80%80%E5%BE%AA%E7%92%B0%E8%BE%B2%E6%B3%95%E3%80%80%E6%9C%89%E6%A9%9F%E5%9C%9F%E5%A3%8C%E3%80%80%E7%B1%B3%E3%81%AC%E3%81%8B%E3%80%80%E7%B4%8D%E8%B1%86%E8%8F%8C%E3%80%80%E9%85%B5%E6%AF%8D%E8%8F%8C%E3%80%80%E4%B9%B3%E9%85%B8%E8%8F%8C%E3%80%80'
     ]
@@ -2973,15 +2973,6 @@ var SEARCH_SERIES = [
   },
   {
     btn: 'Many people who purchase an Accuphase preamplifier or integrated amplifier seem to feel at first that its highly detailed sound represents the ultimate in audio quality. However, that impression is often strongest only in the beginning.When listening slowly and casually over a long period of time, some listeners may find the Accuphase sound easier to tire of. In contrast, this video discusses how a system consisting of a UESGI preamplifier, a Luxman power amplifier, and a UESGI phono amplifier can remain enjoyable for years, providing a sound that listeners never seem to grow tired of and always want to keep listening to.',
-    label: '上杉 真空管アンプ　UESGI　フォノアンプ',
-    urls: [
-      'https://www.youtube.com/watch?v=lubUnMAsWiA',
-      'https://www.youtube.com/watch?v=mXhvklqxcbM',
-      'https://www.youtube.com/watch?v=t8WN8EBs3tQ'
-    ]
-  },
-  {
-    btn: 'Accuphaseのプリアンプやプリメインアンプを購入して最初に聴いた感想は、解像度の高い音で音質が最高と勘違いする方が多い様です。最初だけです。ゆっくりゆったりと時間を掛けて聴いているとAccuphaseの音は飽きやすく、代わりにUESGIのプリアンプとLUXMANのパワーアンプとUESGIのフォノアンプを長期間保有して聞いていると飽きないでいつまでも聴いていたいと思わせてくれる動画。',
     label: '上杉 真空管アンプ　UESGI　フォノアンプ',
     urls: [
       'https://www.youtube.com/watch?v=lubUnMAsWiA',
