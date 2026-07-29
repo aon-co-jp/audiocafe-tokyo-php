@@ -2709,6 +2709,13 @@ var SEARCH_SERIES = [
     ]
   },
   {
+    btn: '解明されてきたUFO技術３選',
+    label: '解明されてきたUFO技術３選',
+    urls: [
+      'https://www.youtube.com/shorts/FDSJqS1MBwg'
+    ]
+  },
+  {
     btn: 'グレート・テイキングとは？　それを防ぐには？',
     label: 'グレート・テイキングとは？',
     urls: [
