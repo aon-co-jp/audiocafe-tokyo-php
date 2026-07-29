@@ -3011,24 +3011,17 @@ var SEARCH_SERIES = [
     ]
   },
   {
-    btn: 'SPEC RPA-MG1000 RPA-MG3000（YouTube検索結果）',
-    label: 'SPEC RPA-MG1000 RPA-MG3000 YouTube検索',
-    urls: [
-      'https://www.youtube.com/results?search_query=SPEC%20RPA-MG1000%20RPA-MG3000'
-    ]
-  },
-  {
-    btn: 'Pass Labs USA (via Moon Audio)',
+    btn: 'Pass Labs USA（Google検索結果）',
     label: 'Pass Labs USA',
     urls: [
-      'https://www.moon-audio.com/collections/brands-pass-labs'
+      'https://www.google.com/search?q=Pass%20Labs%20USA'
     ]
   },
   {
-    btn: 'Pass Labs Japan（日本正規代理店、株式会社エレクトリ）',
+    btn: 'Pass Labs Japan（日本正規代理店、株式会社エレクトリ、Google検索結果）',
     label: 'Pass Labs Japan',
     urls: [
-      'https://www.electori.co.jp/pass/'
+      'https://www.google.com/search?q=Pass%20Labs%20%E6%97%A5%E6%9C%AC%E6%AD%A3%E8%A6%8F%E4%BB%A3%E7%90%86%E5%BA%97%20%E3%82%A8%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA'
     ]
   },
   {
