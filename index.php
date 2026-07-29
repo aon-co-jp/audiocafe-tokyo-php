@@ -3007,7 +3007,7 @@ var SEARCH_SERIES = [
     btn: 'SPEC RPA-MG1000 / RPA-MG3000（国産最高峰の超弩級ハイエンドアンプ）日本の高級オーディオメーカー、スペック株式会社(SPEC)のフラグシップ・パワーアンプ。アンプ本体と巨大な外付け電源ユニットが同一サイズのウッドパネル筐体で横並びになる特徴的なスタイルで、モノラルペア（計4筐体）で税込約1,000万円に達する。',
     label: 'SPEC RPA-MG1000 RPA-MG3000',
     urls: [
-      'https://aon.tokyo/',
+      'https://aon.tokyo/#spec',
       'https://www.google.com/search?tbm=isch&q=SPEC%20RPA-MG1000%20RPA-MG3000',
       'https://www.youtube.com/results?search_query=SPEC%20RPA-MG1000%20RPA-MG3000'
     ]
@@ -3016,7 +3016,7 @@ var SEARCH_SERIES = [
     btn: 'PASS LABS',
     label: 'PASS LABS',
     urls: [
-      'https://aon.tokyo/',
+      'https://aon.tokyo/#pass-labs',
       'https://www.moon-audio.com/collections/brands-pass-labs',
       'https://www.electori.co.jp/pass/'
     ]
