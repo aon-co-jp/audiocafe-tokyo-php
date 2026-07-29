@@ -2702,14 +2702,7 @@ var SEARCH_SERIES = [
   },
    
 {
-    btn: 'エジプトとインカの地下から日本語の石板',
-    label: 'エジプトとインカの地下から日本語の石板',
-    urls: [
-      'https://youtu.be/C8Szkx4ILwQ?si=d89IMnIxO6SsnDYH'
-    ]
-  },
-{
-    btn: 'Japanese stone tablets found underground in Egypt and the Inca civilization.',
+    btn: 'エジプトとインカの地下から日本語の石板 / Japanese stone tablets found underground in Egypt and the Inca civilization.',
     label: 'エジプトとインカの地下から日本語の石板',
     urls: [
       'https://youtu.be/C8Szkx4ILwQ?si=d89IMnIxO6SsnDYH'
