@@ -3000,17 +3000,34 @@ var SEARCH_SERIES = [
     btn: 'SPEC RPA-MG1000 / RPA-MG3000（国産最高峰の超弩級ハイエンドアンプ）日本の高級オーディオメーカー、スペック株式会社(SPEC)のフラグシップ・パワーアンプ。アンプ本体と巨大な外付け電源ユニットが同一サイズのウッドパネル筐体で横並びになる特徴的なスタイルで、モノラルペア（計4筐体）で税込約1,000万円に達する。',
     label: 'SPEC RPA-MG1000 RPA-MG3000',
     urls: [
-      'https://aon.tokyo/#spec',
-      'https://www.google.com/search?tbm=isch&q=SPEC%20RPA-MG1000%20RPA-MG3000',
+      'https://aon.tokyo/#spec'
+    ]
+  },
+  {
+    btn: 'SPEC RPA-MG1000 RPA-MG3000 RSA-BW1（Google画像検索結果）',
+    label: 'SPEC RPA-MG1000 RPA-MG3000 画像検索',
+    urls: [
+      'https://www.google.com/search?tbm=isch&q=SPEC%20RPA-MG1000%20RPA-MG3000%20RSA-BW1'
+    ]
+  },
+  {
+    btn: 'SPEC RPA-MG1000 RPA-MG3000（YouTube検索結果）',
+    label: 'SPEC RPA-MG1000 RPA-MG3000 YouTube検索',
+    urls: [
       'https://www.youtube.com/results?search_query=SPEC%20RPA-MG1000%20RPA-MG3000'
     ]
   },
   {
-    btn: 'PASS LABS',
-    label: 'PASS LABS',
+    btn: 'Pass Labs USA (via Moon Audio)',
+    label: 'Pass Labs USA',
     urls: [
-      'https://aon.tokyo/#pass-labs',
-      'https://www.moon-audio.com/collections/brands-pass-labs',
+      'https://www.moon-audio.com/collections/brands-pass-labs'
+    ]
+  },
+  {
+    btn: 'Pass Labs Japan（日本正規代理店、株式会社エレクトリ）',
+    label: 'Pass Labs Japan',
+    urls: [
       'https://www.electori.co.jp/pass/'
     ]
   },
