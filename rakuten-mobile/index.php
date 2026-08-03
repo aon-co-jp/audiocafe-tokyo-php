@@ -805,6 +805,12 @@ if (!$_RM_EMBED) {
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23ef4444'/%3E%3Ctext x='50' y='72' font-size='64' text-anchor='middle' fill='white' font-family='sans-serif'%3E📶%3C/text%3E%3C/svg%3E">
 </head>
 <body>
+<?php $current = 'ja'; include __DIR__ . '/lang-nav.php'; ?>
+<style>
+.lang-switch{text-align:center;padding:10px 16px 0;}
+.lang-switch a{display:inline-block;padding:.4rem 1rem;border-radius:999px;background:rgba(15,23,42,.85);border:1px solid rgba(148,163,184,.25);color:#e2e8f0;text-decoration:none;font-weight:600;font-size:13px;margin:.15rem;}
+.lang-switch a:hover{background:rgba(59,130,246,.25);color:#fff;}
+</style>
 <?php rm_render_fragment(); ?>
 
 
