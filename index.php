@@ -1320,6 +1320,7 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
 </head>
 <body>
 
+<p style="text-align:center;font-size:.85rem;margin:0.5rem 0;"><a href="https://ameblo.jp/www-aon/entry-12974607800.html" target="_blank" rel="noopener">📝 上下水道配管や屋根瓦などのハイテク新素材。パナホームとヤマダホームのコーキングレス外壁</a></p>
 
 <?php
 $mlja = ($lang === 'ja');
