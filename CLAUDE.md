@@ -97,6 +97,48 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
 
 ## HANDOFF(直近の作業ログ、上が最新)
 
+- **2026-08-04 `rakuten-mobile`を17言語対応に拡張 + トップページにブログリンク追加**:
+  ユーザー指示「英語が基本で翻訳して、中で主要国にリンクを一番上に張って
+  リンク先で表示して」+段階的な言語追加指示(英/英(UK)/伊/独/オーストリア/
+  スイス/仏/露/ウクライナ/アラビア/ペルシャ/韓/中国語簡体字・繁体字/西/
+  フィリピン語)に対応し、既存の`aruaru`/`aruaru-lady`と同じ
+  `lang-nav.php`パターンを`rakuten-mobile/`にも新設。
+  - 新規`rakuten-mobile/lang-nav.php`(17言語、`at`/`ch`はオーストリア/
+    スイスの公用語がドイツ語であることを理由に`de`と同一翻訳内容を国旗・
+    ラベルのみ変えて別ファイル提供——架空の別言語は作らない設計)。
+  - `index.php`(日本語)に`$current = 'ja'; include __DIR__ .
+    '/lang-nav.php';`を`<body><main>`直後に追加。
+  - `index-en.php`(英語、ユーザー指示通り基本版)を含む16言語分の
+    翻訳版ファイルを新規作成(`index-en-gb.php`/`index-it.php`/
+    `index-de.php`/`index-at.php`/`index-ch.php`/`index-fr.php`/
+    `index-ru.php`/`index-uk.php`/`index-ar.php`(RTL)/`index-fa.php`
+    (RTL)/`index-ko.php`/`index-zh-cn.php`/`index-zh-tw.php`/
+    `index-es.php`/`index-tl.php`)。いずれもClaude Codeによる人力翻訳
+    (自動翻訳APIは未使用)、全17ファイル`php -l`構文チェック済み。
+  - トップページ(`index.php`)の`<body>`直後に2件目のブログリンク
+    (「上下水道配管や屋根瓦などのハイテク新素材。パナホームとヤマダ
+    ホームのコーキングレス外壁」、`ameblo.jp/www-aon/entry-12974607800`)
+    を追加(既存の1件目リンクと同じ位置・スタイル)。
+  - **正直な開示**: (1) 17言語版の翻訳は静的な一括翻訳であり、
+    キャッシュJSON側の動的データ(料金・カバレッジ率等)が今後更新
+    されても翻訳文自体は自動追随しない(数値・単位表記は元々言語間で
+    ほぼ共通のため実害は小さいと判断)。(2) `aruaru-llm`側に
+    `POST /v1/translate`エンドポイントを新設したが(同リポジトリ
+    CLAUDE.md参照)、今回の17言語版生成には使用していない(人力翻訳の方が
+    品質面で確実と判断)——将来、動的データ部分の自動翻訳が必要になった
+    場合の実装候補として記録するのみ。
+  - **本番反映**: `scp`で`/var/www/audiocafe.tokyo/`へ直接アップロード、
+    トップページ("/")自体は`audiocafe-tokyo-rust`(別リポジトリ)が配信
+    するため、ブログリンク追加はそちら側にも別途反映(同リポジトリ
+    CLAUDE.md参照)。実インターネット経由で新規17ファイルの`index-*.php`
+    アクセス・ブログリンク表示を確認済み。
+  - 次にすべきこと: (1) 動的データ部分の自動翻訳が必要になった場合、
+    `aruaru-llm`の`/v1/translate`を実際に呼ぶcron配線を検討、(2) `aruaru`・
+    `aruaru-lady`と同様、rakuten-mobileの17言語版もcron自動更新
+    (`audiocafe-cron-php.timer`、毎朝5時)経由でキャッシュJSON側は
+    更新され続けるが、静的翻訳文自体の更新契機は無いため、内容が大きく
+    変わった場合は翻訳ファイルの再生成が必要になる。
+
 - **2026-07-29 YouTube再生リストシリーズ(`SEARCH_SERIES`)のデータ整備一式**:
   ユーザー報告に基づき、`audiocafe-tokyo-rust`(Rust版)と同時に以下を対応、
   VPS本番へ`index.php`を直接アップロードして反映まで確認済み:
