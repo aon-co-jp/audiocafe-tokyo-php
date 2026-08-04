@@ -126,11 +126,36 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
   6. **検証**: 新規・変更した全16ファイル(新規14ファイル+lang-nav.php
      3件更新のうち2件は新規扱い)を`php -l`で構文チェック、エラー無し。
      実インターネット経由でのアクセス確認は本番反映後に別途実施予定。
-  - 次にすべきこと: (1) VPSへ本番反映後、`https://audiocafe.tokyo/
-    aruaru/index-he.php`等、代表的な新規URLへの実アクセスで表示確認、
-    (2) 動的データ部分(料金・カバレッジ率等)は静的翻訳のため今後の
-    更新時にも自動追随しない点は既存の制約のまま(直前HANDOFFの開示と
-    同じ)。
+  - **本番反映・実バグ2件を発見・修正**: (a) `/aruaru`・`/aruaru-lady`・
+    `/rakuten-mobile`配下は本番で`open-web-server`(共有リバースプロキシ)
+    により`audiocafe-tokyo-rust`(Rust版、多言語ページ未実装)へ丸ごと
+    転送される設定になっており、`audiocafe-tokyo-php`側にファイルを
+    scpしただけでは新規言語ページに一切到達できなかった
+    (`index-ar.php`等、以前から存在するはずのファイルも同様に404)。
+    `open-web-server`の`domains.toml`に`/aruaru/index-`・
+    `/aruaru-lady/index-`・`/rakuten-mobile/index-`という、より長い
+    prefixで`127.0.0.1:4401`(PHP-FPM相当のlegacy `php -S`)へ振り分ける
+    エントリを追加し(`tenant_router`は`path_prefix`長の最長一致を
+    優先)、`systemctl restart open-web-server`で反映。(b) 調査の結果、
+    直前の2026-08-04エントリで「rakuten-mobileの17言語版をscpで本番
+    アップロード・実インターネット経由で確認済み」としていた記述は
+    **誤りだったことが判明**——実際にはVPS上に`index-he.php`以外の
+    言語ファイルが1件も存在しておらず(`index.php`のみ)、当時の
+    「確認済み」は取り違えだったと考えられる。今回全17言語ファイルを
+    改めて`scp`し、実際にVPS上に存在すること・`https://audiocafe.tokyo/
+    rakuten-mobile/index-en.php`等が実際に200を返すことを`curl`で
+    再確認した。(c) `audiocafe-tokyo-rust`側の日本語トップページ
+    (`/aruaru`等)には多言語版への導線(ナビ)自体が無かったため、
+    同リポジトリに18言語ピル型ナビを追加(詳細は`audiocafe-tokyo-rust/
+    CLAUDE.md` 2026-08-04続きエントリ参照)。
+  - **検証**: `aruaru/index-he.php`・`aruaru/index-en.php`・
+    `aruaru-lady/index-es.php`・`rakuten-mobile/index-en.php`・
+    `rakuten-mobile/index-he.php`・`rakuten-mobile/index-tl.php`いずれも
+    実インターネット経由で200を確認。3ディレクトリとも実ファイル数
+    (`index-*.php`)が17件ずつ(=18言語)VPS上に存在することを確認済み。
+  - 次にすべきこと: 動的データ部分(料金・カバレッジ率等)は静的翻訳の
+    ため今後の更新時にも自動追随しない点は既存の制約のまま(直前
+    HANDOFFの開示と同じ)。
 
 - **2026-08-04 `rakuten-mobile`を17言語対応に拡張 + トップページにブログリンク追加**:
   ユーザー指示「英語が基本で翻訳して、中で主要国にリンクを一番上に張って
