@@ -1,5 +1,5 @@
 <?php
-/** 17言語共通の言語切替ナビ。$current に現在の言語コードを入れてincludeする。
+/** 18言語共通の言語切替ナビ。$current に現在の言語コードを入れてincludeする。
  *  'at'(オーストリア)と'ch'(スイス)はいずれもドイツ語が公用語の一つ
  *  (スイスは独/仏/伊/ロマンシュ語が公用語で、最も広く使われるドイツ語を
  *  代表バリアントとして採用)のため、'de'と同一の翻訳内容を国旗・ラベル
@@ -23,7 +23,8 @@ $languages = [
     'zh-tw' => ['label' => '🇹🇼 繁體中文',            'href' => '/rakuten-mobile/index-zh-tw.php'],
     'es'    => ['label' => '🇪🇸 Español',            'href' => '/rakuten-mobile/index-es.php'],
     'tl'    => ['label' => '🇵🇭 Filipino',            'href' => '/rakuten-mobile/index-tl.php'],
-    // ↑ 17言語すべて実装済み(2026-08-03、主要国+at/ch(独語共用)/tl対応、確定版)。
+    'he'    => ['label' => '🇮🇱 עברית',              'href' => '/rakuten-mobile/index-he.php'],
+    // ↑ 18言語すべて実装済み(2026-08-04、ヘブライ語を追加)。
 ];
 $current = $current ?? 'ja';
 ?>
