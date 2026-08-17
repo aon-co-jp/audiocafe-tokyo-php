@@ -3010,6 +3010,13 @@ var SEARCH_SERIES = [
     ]
   },
   {
+    btn: 'McIntosh Amplifier（マッキントッシュ、ブルーアイズで有名な米国の高級オーディオブランド）',
+    label: 'McIntosh Amplifier',
+    urls: [
+      'https://ameblo.jp/www-aon/entry-12976022104.html'
+    ]
+  },
+  {
     btn: 'Pass Labs USA（Google検索結果）',
     label: 'Pass Labs USA',
     urls: [
