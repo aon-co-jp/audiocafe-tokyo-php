@@ -97,6 +97,19 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
 
 ## HANDOFF(直近の作業ログ、上が最新)
 
+- **2026-08-17 YouTube背景プレイヤーにMcIntosh Amplifierのリンクを追加
+  (ユーザー指示「audiocafe.tokyoのYoutubeのSPECの次にMcintosh
+  Amplifierのリンクにhttps://ameblo.jp/www-aon/entry-12976022104.html
+  を貼って」への対応)**: `SEARCH_SERIES`配列の「SPEC RPA-MG1000
+  RPA-MG3000 画像検索」エントリの直後、「Pass Labs USA」の直前に
+  McIntosh Amplifierのエントリ(btn/label、ameblo.jpの当該記事URL)を
+  追加。姉妹リポジトリ`audiocafe-tokyo-rust`側の`assets/
+  search_series.json`にも同じ内容・同じ位置で追加済み(詳細は
+  同リポジトリのCLAUDE.md参照)。README/CLAUDE/PORTINGの英語版
+  (README-English.md/CLAUDE-English.md/PORTING-English.md)も本HANDOFF
+  と併せて新設した。
+  - 次にすべきこと: 特になし(今回のスコープは完了)。
+
 - **2026-08-04(続き) `aruaru`/`aruaru-lady`を11言語→18言語へ拡張 +
   `rakuten-mobile`にヘブライ語を追加(ユーザー指示「世界十数カ国語に
   翻訳するように指示したのがどこかに残っていると思いますので、その
