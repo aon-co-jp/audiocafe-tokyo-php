@@ -3174,6 +3174,15 @@ var SEARCH_SERIES = [
   },
 
   {
+    btn: '東亜樹',
+    label: '東亜樹',
+    urls: [
+      'https://www.youtube.com/watch?v=dRQl07pSfpU&list=RDdRQl07pSfpU&start_radio=1',
+      'https://www.youtube.com/watch?v=rxu7SU53zJ4&list=RDrxu7SU53zJ4&start_radio=1'
+    ]
+  },
+
+  {
     btn: '高橋洋子',
     label: 'YOUKO TAKAHASHI',
     urls: [
