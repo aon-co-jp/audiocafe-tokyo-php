@@ -2603,8 +2603,8 @@ var SEARCH_SERIES = [
   },
 
   {
-    btn: 'QUAD JBL',
-    label: 'QUAD JBL',
+    btn: 'QUAD JBL4351',
+    label: 'QUAD JBL4351',
     urls: [
       'https://youtu.be/asjUC5y1bdg?si=noL5h_fNud9dJlv0'
     ]
@@ -2620,10 +2620,33 @@ var SEARCH_SERIES = [
     ]
   },
   {
+    btn: 'アルニコ4351',
+    label: 'オールアルニコ 4345 4インチBe',
+    urls: [
+      'https://www.youtube.com/watch?v=gxOIY2fgzzU',
+      'https://www.youtube.com/watch?v=tXDKI9RgeXc',
+      'https://www.youtube.com/watch?v=xiNfP6HfxVo',
+      'https://www.youtube.com/watch?v=SkqIv7rqV6M',
+      'https://www.youtube.com/watch?v=KkBONwQptGk',
+      'https://www.youtube.com/watch?v=IBOAq38RuAM',
+      'https://www.youtube.com/watch?v=cHgqVmErXgE',
+      'https://www.youtube.com/watch?v=44U6xqzlO5w',
+      'https://www.youtube.com/watch?v=gkYxfZpCea8',
+      'https://www.youtube.com/watch?v=RU1rDibnrbk'
+    ]
+  },
+  {
     btn: '岡野昭仁。歌唱力がカンストするとこうなるって知ってた？　　　　　　　　',
     label: 'アカペラ最強',
     urls: [
       'https://www.youtube.com/shorts/LFRgAkNSpdg'
+    ]
+  },
+  {
+    btn: 'Bass Drops',
+    label: 'Bass Drops',
+    urls: [
+      'https://www.youtube.com/watch?v=hRC2cXbeocw'
     ]
   },
 {
