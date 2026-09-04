@@ -5043,7 +5043,7 @@ function buildSeriesBtnsEarly() {
   var html = '';
   for (var i = 0; i < SEARCH_SERIES.length; i++) {
     html += '<button type="button" class="yt-bg-mini-btn yt-series-btn" data-series="' + i + '" aria-pressed="' + (i === DEFAULT_SERIES_INDEX ? 'true' : 'false') + '">'
-          + '<span class="yt-series-label">' + __trimSeriesLabel(SEARCH_SERIES[i].btn) + '</span>'
+          + '<span class="yt-series-label">' + __trimSeriesLabel(__seriesDisplayLabel(SEARCH_SERIES[i])) + '</span>'
           + '</button>';
   }
   wrap.innerHTML = html;
@@ -5104,11 +5104,16 @@ function __trimSeriesLabel(s){
   return String(s == null ? '' : s).replace(/^[\s\u3000]+|[\s\u3000]+$/g, '');
 }
 
+function __seriesDisplayLabel(s){
+  if (!s) return '';
+  return (s.label && s.label.length) ? s.label : s.btn;
+}
+
 function __buildOriginalsCache(){
   if (__ytSeriesFullCache) return __ytSeriesFullCache;
   var arr = [];
   for (var i = 0; i < SEARCH_SERIES.length; i++) {
-    arr.push(__trimSeriesLabel(SEARCH_SERIES[i] && SEARCH_SERIES[i].btn));
+    arr.push(__trimSeriesLabel(__seriesDisplayLabel(SEARCH_SERIES[i])));
   }
   __ytSeriesFullCache = arr;
   return arr;
