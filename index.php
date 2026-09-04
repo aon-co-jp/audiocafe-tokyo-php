@@ -3178,7 +3178,8 @@ var SEARCH_SERIES = [
     label: '東亜樹',
     urls: [
       'https://www.youtube.com/watch?v=dRQl07pSfpU&list=RDdRQl07pSfpU&start_radio=1',
-      'https://www.youtube.com/watch?v=rxu7SU53zJ4&list=RDrxu7SU53zJ4&start_radio=1'
+      'https://www.youtube.com/watch?v=rxu7SU53zJ4&list=RDrxu7SU53zJ4&start_radio=1',
+      'https://www.youtube.com/watch?v=FNUKj6qMQZw&list=RDFNUKj6qMQZw&start_radio=1'
     ]
   },
 
