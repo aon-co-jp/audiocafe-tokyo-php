@@ -2603,8 +2603,8 @@ var SEARCH_SERIES = [
   },
 
   {
-    btn: 'QUAD JBL4351',
-    label: 'QUAD JBL4351',
+    btn: 'QUAD JBL',
+    label: 'QUAD JBL',
     urls: [
       'https://youtu.be/asjUC5y1bdg?si=noL5h_fNud9dJlv0'
     ]
