@@ -2614,9 +2614,11 @@ var SEARCH_SERIES = [
     btn: 'KRS4351',
     label: 'KRS4351',
     urls: [
-      'https://www.youtube.com/watch?v=mSDVnO5gFYk&t=552s',
-      'https://youtu.be/bmNTCy6GDtM?si=pFjGEFEeb9WxyFxi',
-      'https://www.youtube.com/results?search_query=%E6%9C%80%E9%AB%98%E5%B3%B0%E3%82%B9%E3%83%94%E3%83%BC%E3%82%AB%E3%83%BC%E3%80%80%E5%9C%A7%E5%B7%BB%E3%80%80KRS4351'
+      'https://www.youtube.com/watch?v=bHdmf38fXfk',
+      'https://www.youtube.com/watch?v=HL1KAIDpYr0',
+      'https://www.youtube.com/watch?v=yguj2n9QSus',
+      'https://www.youtube.com/watch?v=zyT5g7B8j60',
+      'https://www.youtube.com/watch?v=aNq29hAPq0M'
     ]
   },
   {
