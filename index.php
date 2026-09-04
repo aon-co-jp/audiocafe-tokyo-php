@@ -3143,6 +3143,13 @@ var SEARCH_SERIES = [
   },
   
   {
+    btn: '今井美樹　CLASSICAL IVORY',
+    label: '今井美樹　CLASSICAL IVORY',
+    urls: [
+      'https://www.youtube.com/playlist?list=PLLjWd3ELQ0p3e3qQ8CqPYnJAD6D4EDL5z'
+    ]
+  },
+  {
     btn: '小田和正　たしかなこと',
     label: '小田和正 たしかなこと',
     urls: [
