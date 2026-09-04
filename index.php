@@ -2572,13 +2572,6 @@ var SEARCH_SERIES = [
       'https://youtu.be/6EUEtclPZ-k?si=BHWPzAk9Jh60mIyA'
     ]
   },
-  {
-    btn: 'QUAD JBL4351 CUSTOM',
-    label: 'QUAD 4351',
-    urls: [
-      'https://www.youtube.com/shorts/0fMzUOTsxJs'
-    ]
-  },
    {
     btn: 'JBL Summit EVEREST 2026',
     label: 'JBL Summit EVEREST 2026',
@@ -2607,6 +2600,13 @@ var SEARCH_SERIES = [
     label: 'QUAD JBL',
     urls: [
       'https://youtu.be/asjUC5y1bdg?si=noL5h_fNud9dJlv0'
+    ]
+  },
+  {
+    btn: 'QUAD JBL4351 CUSTOM',
+    label: 'QUAD 4351',
+    urls: [
+      'https://www.youtube.com/shorts/0fMzUOTsxJs'
     ]
   },
 
