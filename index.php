@@ -2982,6 +2982,13 @@ var SEARCH_SERIES = [
     ]
   },
   {
+    btn: 'アンプとは？DACとは？オーディオ初心者にも分かるように解説',
+    label: 'アンプとは？DACとは？オーディオ初心者にも分かるように解説',
+    urls: [
+      'https://ameblo.jp/www-aon/entry-12977609426.html'
+    ]
+  },
+  {
     btn: 'UESGI　上杉 真空管アンプ',
     label: '上杉',
     urls: [
