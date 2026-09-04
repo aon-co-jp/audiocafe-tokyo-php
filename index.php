@@ -2932,6 +2932,13 @@ var SEARCH_SERIES = [
     ]
   },
   {
+    btn: '$1 Million Dollars Audio',
+    label: '$1 Million Dollars Audio',
+    urls: [
+      'https://ameblo.jp/www-aon/entry-12977576532.html'
+    ]
+  },
+  {
     btn: 'D412EX',
     label: 'D412EX',
     urls: [
