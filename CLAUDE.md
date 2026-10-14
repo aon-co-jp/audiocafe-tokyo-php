@@ -332,3 +332,11 @@ nginx+PHP-FPM(`/etc/nginx/conf.d/audiocafe.tokyo.conf`)で配信。443番はLet'
 
 - **2026-07-16(続き)**: YouTube検索結果バグの根本修正完了。`fetchAndCollect`(シリーズボタン/イントロ/再検索経路)と`fetchSearchResultIds`(NEXT/ランダムプール経路)の両方でjina.aiスクレイプを撤廃し、検索URLは実際のYouTube検索結果ページへの直接遷移に統一。PHP構文チェック(`php -l`)・埋め込みJSの構文チェック(`node --check`、PHPタグ部分をプレースホルダ置換した上で検証)ともに成功、本番環境で200 OK・修正内容の反映を確認済み。
 - **2026-07-16**: リポジトリ初期化・ドキュメント整備(README/CLAUDE.md/PORTING.md新規作成)・全ファイルpush完了。
+
+## HANDOFF(2026-10-14) VPSお引越しの準備とPHPコードのGit化
+- 2026-10-08にVPS上だけで直したPHP(`aruaru/index.php`の`--cron-tech`/`--ai-fix`、価格訂正`aruaru_ai_sanitize_links`、`aruaru-llm`連携`aruaru_llm_complete`、
+  URL実在確認`aruaru_filter_live_urls`、中間証明書`ca-extra.pem`)を、**リポジトリの最新版へ3方向マージ**して取り込んだ(衝突0)。リポジトリの方が本番より新しい部分
+  (例: `rakuten-mobile/index.php`の言語切替)があるため、本番のファイルをそのままコピーしない(コピーすると新しい変更を消す)。
+- 設定の実物を `deploy/vps/`(systemd・nginx)へ保存。秘密は含めない。引越し手順は `PORTING.md`。
+- **本番へは未反映の差分**: リポジトリ側にだけある新しい変更(`rakuten-mobile`の言語切替ほか)は現行VPSに入っていない。反映するなら差分を確認してから。
+- 知識(価格の訂正・ルール)は `aruaru-llm` が GitHub(`open-english/data/knowledge`)へ自動保存、起動時に自動復元(実測済み)。

@@ -1,0 +1,9 @@
+[Unit]
+Description=audiocafe.tokyo PHP版 毎朝更新: 技術ランキング/学習価格(aruaru --cron-tech) + キャバ系ランキング(aruaru-lady --cron-all) ※楽天モバイル/doda/英会話はaudiocafe-cron-rustが担当
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/www/audiocafe.tokyo
+ExecStart=/usr/bin/php /var/www/audiocafe.tokyo/aruaru/cron.php
+ExecStart=/usr/bin/php /var/www/audiocafe.tokyo/aruaru-lady/cron.php
+User=nginx

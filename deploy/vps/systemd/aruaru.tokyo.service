@@ -1,0 +1,16 @@
+[Unit]
+StartLimitIntervalSec=0
+Description=aruaru.tokyo TOP page (Rust + Poem)
+After=network.target
+
+[Service]
+Type=simple
+Environment=ARUARU_TOKYO_BIND=127.0.0.1:4100
+WorkingDirectory=/root/aruaru.tokyo
+ExecStart=/root/aruaru.tokyo/target/release/aruaru-tokyo-server
+Restart=on-failure
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target

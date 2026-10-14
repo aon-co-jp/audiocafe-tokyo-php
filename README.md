@@ -38,3 +38,9 @@ VPS上の`/var/www/audiocafe.tokyo`へ`scp`で直接配置し、nginx+PHP-FPMで
 - [audiocafe-tokyo-rust](https://github.com/aon-co-jp/audiocafe-tokyo-rust) — このサイト自身のRust+RPoemへの並行移植版。トップページ・`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`は本番で既にこちらへカットオーバー済み
 - [aruaru-tokyo-server](https://github.com/aon-co-jp/aruaru-tokyo-server) — 姉妹サイト`aruaru.tokyo`(Rust+Poem製、別ドメイン・別プロジェクト)。`/aruaru/`・`/aruaru-lady/`・`/rakuten-mobile/`をミラーproxyでこのサイトのコンテンツへ橋渡ししている
 - [aruaru-easyweb](https://github.com/aon-co-jp/aruaru-easyweb) — ドメイン/HTTPS自動化・OTP認証サーバー
+
+## VPSお引越し(2026-10-14追記)
+本番のVPSを新しいVPSへ移せるよう、構成・手順・設定ファイルをまとめた。設定の実物は [`deploy/vps/`](deploy/vps/)(systemd・nginx、秘密なし)、
+手順と「Gitで復元できるもの/できないもの」は [`PORTING.md`](PORTING.md) の「VPS お引越し手順」を参照。
+毎朝05:00の自動クロールは、`aruaru/cron.php`(技術ランキング・学習価格・AI学習コメント。生成AIは自前の`aruaru-llm`経由でOpenAIは使わない)と
+`aruaru-lady/cron.php`(キャバ系ランキング)。**新品のVPSでの通し試験は未実施。**

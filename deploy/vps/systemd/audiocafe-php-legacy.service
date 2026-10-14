@@ -1,0 +1,15 @@
+[Unit]
+Description=audiocafe.tokyo legacy PHP homepage (php -S, /index.php nav link only)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/var/www/audiocafe.tokyo
+ExecStart=/usr/bin/php -S 127.0.0.1:4401 -t /var/www/audiocafe.tokyo
+Restart=always
+RestartSec=3
+User=nginx
+Group=nginx
+
+[Install]
+WantedBy=multi-user.target

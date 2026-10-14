@@ -71,3 +71,9 @@ for the remaining paths.**
   `/aruaru/`/`/aruaru-lady/`/`/rakuten-mobile/` back to this site's content
 - [aruaru-easyweb](https://github.com/aon-co-jp/aruaru-easyweb) — domain/HTTPS automation and
   the OTP auth server
+
+## Moving to a new VPS (added 2026-10-14)
+The layout, procedure and config files needed to move production to a new VPS are collected here. The real config files are in [`deploy/vps/`](deploy/vps/)
+(systemd and nginx, no secrets); see "VPS migration guide" in [`PORTING-English.md`](PORTING-English.md) for the procedure and what Git can / cannot restore.
+The daily 05:00 crawl is `aruaru/cron.php` (tech ranking, learning prices, AI learning comments; the generative AI goes through our own `aruaru-llm`, OpenAI is not used)
+and `aruaru-lady/cron.php` (hostess-job rankings). **Not yet tested end-to-end on a fresh VPS.**

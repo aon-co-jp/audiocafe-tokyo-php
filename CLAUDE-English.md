@@ -92,3 +92,11 @@ cache JSON serving, etc.) continues to go through PHP-FPM as before.
   was also added to the sister repository `audiocafe-tokyo-rust`'s `assets/search_series.json`
   (see that repo's CLAUDE.md). The English README/CLAUDE/PORTING documents (this set of
   files) were created alongside this change.
+
+## HANDOFF (2026-10-14) Preparing the VPS move and putting the PHP code under Git
+- The PHP that was fixed only on the VPS on 2026-10-08 (`--cron-tech` / `--ai-fix` in `aruaru/index.php`, price correction `aruaru_ai_sanitize_links`, the `aruaru-llm` bridge
+  `aruaru_llm_complete`, URL liveness check `aruaru_filter_live_urls`, the intermediate certificate `ca-extra.pem`) was brought in with a **three-way merge onto the repo's latest** (0 conflicts).
+  The repo is newer than production in places (e.g. the language switcher in `rakuten-mobile/index.php`), so do not simply copy production files over it (that would erase newer changes).
+- The real config files are saved in `deploy/vps/` (systemd, nginx), without secrets. The migration procedure is in `PORTING-English.md`.
+- **Not yet on production**: changes that exist only in the repo (the `rakuten-mobile` language switcher etc.) are not on the current VPS. Review the diff before deploying.
+- Knowledge (price corrections, rules) is backed up by `aruaru-llm` to GitHub (`open-english/data/knowledge`) and restored automatically on start (measured).

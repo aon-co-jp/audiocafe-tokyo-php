@@ -1,0 +1,15 @@
+[Unit]
+StartLimitIntervalSec=0
+Description=audiocafe-tokyo-rust (PHP -> Rust migration preview)
+After=network.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/audiocafe-tokyo-rust
+ExecStart=/root/audiocafe-tokyo-rust/target/release/audiocafe-tokyo-server
+Restart=on-failure
+RestartSec=2
+User=root
+
+[Install]
+WantedBy=multi-user.target

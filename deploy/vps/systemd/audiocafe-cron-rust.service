@@ -1,0 +1,8 @@
+[Unit]
+Description=audiocafe-tokyo-rust 毎朝更新: 楽天モバイル/doda/英会話ランキング (--cron-all) ※技術ランキング/学習価格・キャバ系はaudiocafe-cron-phpが担当
+
+[Service]
+Type=oneshot
+WorkingDirectory=/var/www/audiocafe.tokyo
+ExecStart=/root/audiocafe-tokyo-rust/target/release/audiocafe-tokyo-server --cron-all
+User=root

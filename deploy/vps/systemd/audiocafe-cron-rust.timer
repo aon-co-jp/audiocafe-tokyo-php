@@ -1,0 +1,9 @@
+[Unit]
+Description=audiocafe-tokyo-rust 毎朝5時: 楽天モバイル/doda/英会話ランキング
+
+[Timer]
+OnCalendar=*-*-* 05:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

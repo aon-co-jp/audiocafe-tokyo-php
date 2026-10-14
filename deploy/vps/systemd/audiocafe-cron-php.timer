@@ -1,0 +1,9 @@
+[Unit]
+Description=audiocafe.tokyo PHP版 毎朝5時: 技術ランキング/学習価格 + キャバ系ランキング
+
+[Timer]
+OnCalendar=*-*-* 05:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

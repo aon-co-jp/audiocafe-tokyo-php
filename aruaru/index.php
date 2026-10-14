@@ -395,6 +395,9 @@ function aruaru_tech_http_get(string $url, int $timeout = 20): ?string
     if (GITHUB_TOKEN !== '' && strpos($url, 'api.github.com') !== false) {
         $headers .= 'Authorization: Bearer ' . GITHUB_TOKEN . "\r\n";
     }
+    $ssl = ['verify_peer' => true, 'verify_peer_name' => true];
+    $bundle = aruaru_ca_bundle_with_extras();
+    if ($bundle !== null) { $ssl['cafile'] = $bundle; }
     $ctx = stream_context_create([
         'http' => [
             'method'  => 'GET',
@@ -402,10 +405,273 @@ function aruaru_tech_http_get(string $url, int $timeout = 20): ?string
             'header'  => $headers,
             'ignore_errors' => true,
         ],
-        'ssl' => ['verify_peer' => true, 'verify_peer_name' => true],
+        'ssl' => $ssl,
     ]);
     $raw = @file_get_contents($url, false, $ctx);
     return ($raw !== false && $raw !== '') ? $raw : null;
+}
+
+/**
+ * OSのCAバンドル + aruaru/ca-extra.pem(追加の中間証明書)を結合したファイルのパスを返す。
+ * 背景(2026-10-08): db-engines.com は中間証明書(Let's Encrypt YR1)をサーバーから送らず、
+ * ブラウザ(AIAで補完)では開けるが PHP では証明書検証に失敗していた。検証は無効にせず、
+ * 中間証明書だけを信頼リストに追加する。ca-extra.pem が無ければ従来動作(null)。
+ */
+function aruaru_ca_bundle_with_extras(): ?string
+{
+    static $cached = false;
+    if ($cached !== false) { return $cached; }
+    $extra = __DIR__ . '/ca-extra.pem';
+    $sys = null;
+    foreach (['/etc/pki/tls/cert.pem', '/etc/ssl/certs/ca-certificates.crt', '/etc/ssl/cert.pem'] as $c) {
+        if (is_readable($c)) { $sys = $c; break; }
+    }
+    if ($sys === null || !is_readable($extra)) { return $cached = null; }
+    $out = sys_get_temp_dir() . '/aruaru-ca-bundle-' . substr(md5($sys . filemtime($sys) . filemtime($extra)), 0, 12) . '.pem';
+    if (!is_readable($out)) {
+        $tmp = $out . '.' . getmypid();
+        if (@file_put_contents($tmp, (string)file_get_contents($sys) . "\n" . (string)file_get_contents($extra)) === false || !@rename($tmp, $out)) {
+            @unlink($tmp);
+            return $cached = null;
+        }
+    }
+    return $cached = $out;
+}
+
+
+/* ===== aruaru-llm 連携 (2026-10-08): OpenAIキーは使わず、自前の aruaru-llm 経由で生成AIを呼ぶ =====
+   aruaru-llm は 127.0.0.1:4600 で稼働し、Gemini/Groq/Mistral 等の無料枠プロバイダを
+   優先順位つきで束ねる。環境変数 ARUARU_LLM_URL で接続先、"off" で無効化できる。 */
+function aruaru_llm_url(): string
+{
+    $u = getenv('ARUARU_LLM_URL');
+    return ($u === false || $u === '') ? 'http://127.0.0.1:4600' : rtrim($u, '/');
+}
+
+function aruaru_llm_enabled(): bool
+{
+    return strtolower((string)getenv('ARUARU_LLM_URL')) !== 'off';
+}
+
+/**
+ * aruaru-llm にプロンプトを投げて本文テキストを返す。プロバイダは1つずつ順に試し、
+ * 最初に本文が返ったものを採用する(複数同時指定は合成されてJSONが崩れるため使わない)。
+ * 全プロバイダが無料枠切れの場合は $GLOBALS['aruaru_openai_quota_hit'] を立てる
+ * (呼び出し側ループが打ち切る。名前は旧OpenAI実装との互換のため据え置き)。
+ */
+function aruaru_llm_complete(string $prompt, int $timeout = 60): ?string
+{
+    if (!aruaru_llm_enabled() || !function_exists('curl_init')) {
+        return null;
+    }
+    $quotaFails = 0;
+    $tried = 0;
+    foreach (['gemini', 'groq', 'mistral'] as $prov) {
+        $tried++;
+        $ch = curl_init(aruaru_llm_url() . '/v1/chat-providers/complete-priority');
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS     => json_encode(['prompt' => $prompt, 'providers' => [$prov]], JSON_UNESCAPED_UNICODE),
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_TIMEOUT        => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 5,
+        ]);
+        $raw = curl_exec($ch);
+        curl_close($ch);
+        $resp = is_string($raw) ? json_decode($raw, true) : null;
+        if (!is_array($resp)) {
+            continue;
+        }
+        $text = '';
+        if (is_array($resp['reply'] ?? null)) {
+            $text = trim((string)($resp['reply']['text'] ?? ''));
+        } elseif (is_string($resp['reply'] ?? null)) {
+            $text = trim($resp['reply']);
+        }
+        if ($text !== '') {
+            return $text;
+        }
+        if (!empty($resp['all_quota_exceeded'])) {
+            $quotaFails++;
+        }
+    }
+    if ($tried > 0 && $quotaFails === $tried) {
+        $GLOBALS['aruaru_openai_quota_hit'] = 'all_providers_quota_exceeded';
+    }
+    return null;
+}
+
+/**
+ * URLが実在するか(HTTP 2xx/3xx)を並列で確認し、生きているものだけ返す。
+ * 生成AIは実在しないURLを作ることがあるため、保存前に必ず通す。
+ * @param list<array> $items 'url' を持つ要素
+ * @return list<array>
+ */
+function aruaru_filter_live_urls(array $items, int $timeout = 8): array
+{
+    if ($items === [] || !function_exists('curl_multi_init')) {
+        return $items;
+    }
+    $mh = curl_multi_init();
+    $handles = [];
+    foreach ($items as $i => $it) {
+        $ch = curl_init((string)$it['url']);
+        curl_setopt_array($ch, [
+            CURLOPT_NOBODY         => false,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_MAXREDIRS      => 4,
+            CURLOPT_TIMEOUT        => $timeout,
+            CURLOPT_CONNECTTIMEOUT => 5,
+            CURLOPT_RANGE          => '0-2047',
+            CURLOPT_USERAGENT      => 'Mozilla/5.0 (compatible; aruaru-link-check/1.0)',
+            CURLOPT_CAINFO         => (function_exists('aruaru_ca_bundle_with_extras') ? aruaru_ca_bundle_with_extras() : null) ?: ini_get('curl.cainfo') ?: '/etc/pki/tls/cert.pem',
+        ]);
+        curl_multi_add_handle($mh, $ch);
+        $handles[$i] = $ch;
+    }
+    do {
+        $st = curl_multi_exec($mh, $running);
+        if ($running) { curl_multi_select($mh, 1.0); }
+    } while ($running && $st === CURLM_OK);
+    $live = [];
+    foreach ($handles as $i => $ch) {
+        $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        if ($code >= 200 && $code < 400) { $live[] = $items[$i]; }
+        curl_multi_remove_handle($mh, $ch);
+        curl_close($ch);
+    }
+    curl_multi_close($mh);
+    return $live;
+}
+
+
+/* ===== AI学習コメントの価格訂正と学習 (2026-10-08) =====
+   AIが書いた価格欄は実価格と食い違うことが分かった(24件中23件)。
+   1) 保存前に、実際に料金ページから取得した月額で上書きする(確認できない価格は「要確認」)。
+   2) 検出した食い違いと検証済みの事実を、aruaru-llm の知識ストア(/v1/knowledge/add)へ教える。
+      知識は aruaru-llm 側が 6時間ごと/クロール直後に GitHub へ自動バックアップし、
+      VPSを初期化しても起動時に GitHub から復元される(sync-knowledge-to-github.sh / knowledge.rs)。
+   公開リポジトリに保存されるため、教えるのは公開情報(公式ページの料金)だけにする。 */
+
+/** @return array<string,int> ホスト名(www無し) => 検証済みの月額(税込)。値は料金ページから取得した学習価格キャッシュ。 */
+function aruaru_verified_service_prices(): array
+{
+    $cur = function_exists('aruaru_learning_prices_defaults') ? aruaru_learning_prices_defaults() : [];
+    if (defined('ARUARU_LEARNING_PRICES_CACHE') && is_readable(ARUARU_LEARNING_PRICES_CACHE)) {
+        $old = json_decode((string)@file_get_contents(ARUARU_LEARNING_PRICES_CACHE), true);
+        if (is_array($old)) {
+            foreach (['progate_monthly', 'dotinstall_monthly', 'paiza_monthly'] as $k) {
+                if (isset($old[$k]) && is_numeric($old[$k])) { $cur[$k] = (int)$old[$k]; }
+            }
+        }
+    }
+    return [
+        'dotinstall.com' => (int)($cur['dotinstall_monthly'] ?? 0),
+        'progate.com'    => (int)($cur['progate_monthly'] ?? 0),
+        'prog-8.com'     => (int)($cur['progate_monthly'] ?? 0),
+        'paiza.jp'       => (int)($cur['paiza_monthly'] ?? 0),
+    ];
+}
+
+/**
+ * 学習リンクの price 欄を訂正する。検証済みサービスは実価格で上書き、それ以外は
+ * 「無料」以外を「料金は公式サイトで要確認」にする(AIの推測価格は載せない)。
+ * 食い違い(AIの記載と実価格が違った件)は $GLOBALS['aruaru_ai_corrections'] に溜める。
+ * @param list<array> $items
+ * @return list<array>
+ */
+function aruaru_ai_sanitize_links(array $items): array
+{
+    $verified = aruaru_verified_service_prices();
+    foreach ($items as $i => $it) {
+        $host = strtolower((string)(parse_url((string)($it['url'] ?? ''), PHP_URL_HOST) ?: ''));
+        $host = preg_replace('/^www\./', '', $host);
+        $price = trim((string)($it['price'] ?? ''));
+        $v = $verified[$host] ?? 0;
+        if ($v > 0) {
+            preg_match_all('/([0-9][0-9,]{2,5})\s*円/u', $price, $m);
+            $said = array_map(static fn($x) => (int)str_replace(',', '', $x), $m[1] ?? []);
+            if ($said !== [] && !in_array($v, $said, true)) {
+                $GLOBALS['aruaru_ai_corrections'][] = ['host' => $host, 'ai' => $price, 'verified' => $v];
+            }
+            $items[$i]['price'] = '月額' . number_format($v) . '円（税込・公式ページで確認）';
+        } elseif (!preg_match('/^(無料|無償|free)$/iu', $price)) {
+            $items[$i]['price'] = '料金は公式サイトで要確認';
+        }
+    }
+    return $items;
+}
+
+/** aruaru-llm の知識ストアへ1件教える。重複は aruaru-llm 側が弾く。成功なら true。 */
+function aruaru_llm_teach(string $text, array $tags, string $source): bool
+{
+    if (!aruaru_llm_enabled() || !function_exists('curl_init')) { return false; }
+    $ch = curl_init(aruaru_llm_url() . '/v1/knowledge/add');
+    curl_setopt_array($ch, [
+        CURLOPT_POST => true,
+        CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+        CURLOPT_POSTFIELDS => json_encode(['text' => $text, 'tags' => $tags, 'source' => $source], JSON_UNESCAPED_UNICODE),
+        CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 15, CURLOPT_CONNECTTIMEOUT => 5,
+    ]);
+    $raw = curl_exec($ch);
+    $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    curl_close($ch);
+    return is_string($raw) && $code >= 200 && $code < 300;
+}
+
+/** 検証済みの事実・訂正・ルールを教える。返り値は教えた件数。 */
+function aruaru_ai_teach_prices(bool $verbose = false): int
+{
+    $today = date('Y-m-d');
+    $pages = [
+        'dotinstall.com' => ['Dotinstall', 'ドットインストール', 'https://dotinstall.com/premium'],
+        'progate.com'    => ['Progate', 'Progate', 'https://progate.com/plans/for_users'],
+        'paiza.jp'       => ['paiza', 'paizaラーニング', 'https://paiza.jp/works/paid_plan_lp/settlement'],
+    ];
+    $n = 0;
+    $facts = [[
+        'Rule: never guess prices of learning services (Progate, dotinstall, paiza, Udemy, Schoo). State only prices verified on the official page; otherwise write "要確認". 学習サービスの料金は推測で書かない。公式ページで確認できた金額だけを書き、不明なら「要確認」とする。',
+        ['rule', 'price', 'learning', 'progate', 'dotinstall', 'paiza', 'udemy', 'schoo'], 'aruaru-ai-teach',
+    ]];
+    foreach (aruaru_verified_service_prices() as $host => $yen) {
+        if (!isset($pages[$host]) || $yen <= 0 || $host === 'prog-8.com') { continue; }
+        [$en, $ja, $url] = $pages[$host];
+        $facts[] = [
+            "Verified price ({$today}): {$en} monthly plan costs {$yen} yen including tax. {$ja}の月額プランは{$yen}円（税込）。公式ページ {$url} で確認。",
+            [strtolower($en), 'price', 'verified', 'learning'], $url,
+        ];
+    }
+    foreach (array_slice($GLOBALS['aruaru_ai_corrections'] ?? [], 0, 20) as $c) {
+        $facts[] = [
+            "Correction: AI wrote price \"{$c['ai']}\" for {$c['host']} but the verified monthly price is {$c['verified']} yen. Do not repeat this mistake. AIが{$c['host']}の料金を「{$c['ai']}」と書いたが誤り。検証済みの月額は{$c['verified']}円。",
+            ['correction', 'price', 'learning'], 'aruaru-ai-teach',
+        ];
+    }
+    foreach ($facts as [$text, $tags, $src]) {
+        if (aruaru_llm_teach($text, $tags, $src)) { $n++; }
+    }
+    if ($verbose && function_exists('aruaru_tech_sync_log')) {
+        aruaru_tech_sync_log("[learning-ai] aruaru-llmへ学習させた件数: {$n}（GitHubへ自動バックアップ）", true);
+    }
+    return $n;
+}
+
+/** 既存のAI学習リンクのキャッシュ全体の価格欄を訂正して保存する。訂正した件数を返す。 */
+function aruaru_ai_fix_cache(): int
+{
+    $cache = aruaru_learning_ai_load_cache();
+    $before = count($GLOBALS['aruaru_ai_corrections'] ?? []);
+    foreach (($cache['entries'] ?? []) as $k => $e) {
+        foreach (['ja', 'en'] as $lang) {
+            if (isset($e[$lang]) && is_array($e[$lang])) {
+                $cache['entries'][$k][$lang] = aruaru_ai_sanitize_links($e[$lang]);
+            }
+        }
+    }
+    aruaru_learning_ai_save_cache($cache);
+    return count($GLOBALS['aruaru_ai_corrections'] ?? []) - $before;
 }
 
 /** @return array<string, string> so_tag => 表示名 */
@@ -716,7 +982,7 @@ function aruaru_tech_fallback_row(string $category, string $name): array
  */
 function aruaru_tech_openai_enrich(string $category, array $names): array
 {
-    if ($names === [] || OPENAI_API_KEY === '') {
+    if ($names === [] || !aruaru_llm_enabled()) {
         return [];
     }
 
@@ -732,30 +998,11 @@ function aruaru_tech_openai_enrich(string $category, array $names): array
         . "各要素のスキーマ: {$schema}\n"
         . "traitsは日本語80字以内。ai_commentは日本語60字以内。memoryは「極小/小容量/中程度/大容量必要」などから選ぶ。";
 
-    $payload = json_encode([
-        'model' => 'gpt-4o-mini',
-        'temperature' => 0.35,
-        'max_tokens' => 3500,
-        'messages' => [
-            ['role' => 'system', 'content' => 'JSON配列のみ返す。'],
-            ['role' => 'user', 'content' => $prompt],
-        ],
-    ], JSON_UNESCAPED_UNICODE);
-
-    $ctx = stream_context_create(['http' => [
-        'method' => 'POST',
-        'timeout' => 45,
-        'header' => "Content-Type: application/json\r\nAuthorization: Bearer " . OPENAI_API_KEY . "\r\n",
-        'content' => $payload,
-        'ignore_errors' => true,
-    ]]);
-    $raw = @file_get_contents('https://api.openai.com/v1/chat/completions', false, $ctx);
-    if (!$raw) {
+    $text = aruaru_llm_complete("JSON配列のみ返す。\n" . $prompt, 90);
+    if ($text === null) {
         return [];
     }
-    $resp = json_decode($raw, true);
-    $text = trim((string)($resp['choices'][0]['message']['content'] ?? ''));
-    $text = preg_replace('/^```json\s*|\s*```$/i', '', $text);
+    $text = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $text);
     $arr = json_decode($text, true);
     if (!is_array($arr)) {
         return [];
@@ -800,7 +1047,7 @@ function aruaru_tech_apply_ai_enrichment(string $category, array $rows): array
     foreach (array_chunk($need, 10) as $chunk) {
         $batch = aruaru_tech_openai_enrich($category, $chunk);
         $enriched = array_merge($enriched, $batch);
-        if (OPENAI_API_KEY !== '' && count($chunk) > 1) {
+        if (aruaru_llm_enabled() && count($chunk) > 1) {
             usleep(500000);
         }
     }
@@ -1035,7 +1282,7 @@ function aruaru_tech_refresh_rankings(bool $verbose = false): array
     $frameworks = aruaru_tech_build_top50('framework', $baseline['frameworks'], $external['frameworks']);
     $databases = aruaru_tech_build_top50('database', $baseline['databases'], $external['databases']);
 
-    $aiUsed = OPENAI_API_KEY !== '';
+    $aiUsed = aruaru_llm_enabled();
     $languages = aruaru_tech_apply_ai_enrichment('language', $languages);
     $frameworks = aruaru_tech_apply_ai_enrichment('framework', $frameworks);
     $databases = aruaru_tech_apply_ai_enrichment('database', $databases);
@@ -1682,7 +1929,7 @@ function aruaru_learning_ai_merge_panel(array $panel): array
  */
 function aruaru_learning_ai_fetch_links(string $panelKey, string $techName, string $kind): ?array
 {
-    if (!defined('OPENAI_API_KEY') || OPENAI_API_KEY === '') {
+    if (!aruaru_llm_enabled()) {
         return null;
     }
 
@@ -1693,10 +1940,15 @@ function aruaru_learning_ai_fetch_links(string $panelKey, string $techName, stri
         default => 'クラウド／インフラ',
     };
 
+    $vp = aruaru_verified_service_prices();
+    $priceRule = '【料金のルール】price は推測で書かない。確認済みの金額: ドットインストール月額' . ($vp['dotinstall.com'] ?? 0)
+        . '円、Progate月額' . ($vp['progate.com'] ?? 0) . '円、paiza月額' . ($vp['paiza.jp'] ?? 0)
+        . '円（いずれも税込）。無料のものは "無料"、金額が分からないものは "要確認" と書く。';
     $prompt = <<<EOT
 技術: 「{$techName}」（種別: {$kindJa}）
 2026年時点で、初心者〜中級者がオンラインで学べる「日本語の学習ページ・公式ドキュメント・動画学習サービス（Progate / ドットインストール / paiza / Schoo / Udemy 等）」を中心に、実在する https URL を選んでください。
 公式ドキュメントの日本語版があれば優先。
+{$priceRule}
 
 次のJSONのみを返す（説明文禁止）。各配列は最大10件。url は必ず https で始まる実在URL。
 {
@@ -1705,39 +1957,18 @@ function aruaru_learning_ai_fetch_links(string $panelKey, string $techName, stri
 }
 EOT;
 
-    $payload = json_encode([
-        'model'       => 'gpt-4o-mini',
-        'temperature' => 0.25,
-        'max_tokens'  => 2200,
-        'messages'    => [
-            ['role' => 'system', 'content' => 'You output JSON only. Never invent domains; use well-known real URLs only.'],
-            ['role' => 'user', 'content' => $prompt],
-        ],
-    ], JSON_UNESCAPED_UNICODE);
-
-    $ctx = stream_context_create(['http' => [
-        'method'  => 'POST',
-        'timeout' => 35,
-        'header'  => "Content-Type: application/json\r\nAuthorization: Bearer " . OPENAI_API_KEY . "\r\n",
-        'content' => $payload,
-        'ignore_errors' => true,
-    ]]);
-    $raw = @file_get_contents('https://api.openai.com/v1/chat/completions', false, $ctx);
-    if (!$raw) {
+    $text = aruaru_llm_complete("You output JSON only. Never invent domains; use well-known real URLs only.\n\n" . $prompt, 90);
+    if ($text === null) {
         return null;
     }
-    $resp = json_decode($raw, true);
-    if (!is_array($resp)) {
-        return null;
-    }
-    $text = trim((string)($resp['choices'][0]['message']['content'] ?? ''));
     $text = preg_replace('/^```(?:json)?\s*|\s*```$/i', '', $text);
     $obj = json_decode($text, true);
     if (!is_array($obj) || !isset($obj['ja'], $obj['en'])) {
         return null;
     }
-    $ja = aruaru_learning_ai_dedupe_urls(is_array($obj['ja']) ? $obj['ja'] : []);
-    $en = aruaru_learning_ai_dedupe_urls(is_array($obj['en']) ? $obj['en'] : []);
+    // 生成AIは実在しないURLを作ることがあるため、実際にアクセスして生きているものだけを残す
+    $ja = aruaru_ai_sanitize_links(aruaru_filter_live_urls(aruaru_learning_ai_dedupe_urls(is_array($obj['ja']) ? $obj['ja'] : [])));
+    $en = aruaru_ai_sanitize_links(aruaru_filter_live_urls(aruaru_learning_ai_dedupe_urls(is_array($obj['en']) ? $obj['en'] : [])));
     if ($ja === [] && $en === []) {
         return null;
     }
@@ -1750,9 +1981,9 @@ EOT;
  */
 function aruaru_learning_ai_cron_refresh(array $rankingData, int $maxPerRun = 12, bool $verbose = false): void
 {
-    if (!defined('OPENAI_API_KEY') || OPENAI_API_KEY === '') {
+    if (!aruaru_llm_enabled()) {
         if ($verbose && function_exists('aruaru_tech_sync_log')) {
-            aruaru_tech_sync_log('[learning-ai] OPENAI_API_KEY 未設定のためスキップ', true);
+            aruaru_tech_sync_log('[learning-ai] ARUARU_LLM_URL=off のためスキップ', true);
         }
 
         return;
@@ -1808,6 +2039,12 @@ function aruaru_learning_ai_cron_refresh(array $rankingData, int $maxPerRun = 12
             default => 'cloud',
         };
         $fetched = aruaru_learning_ai_fetch_links($key, $name, $kind);
+        if (!empty($GLOBALS['aruaru_openai_quota_hit'])) {
+            if ($verbose && function_exists('aruaru_tech_sync_log')) {
+                aruaru_tech_sync_log('[learning-ai] 利用上限に達したため今回は打ち切り (' . $GLOBALS['aruaru_openai_quota_hit'] . ')', true);
+            }
+            break;
+        }
         if ($fetched === null) {
             continue;
         }
@@ -1815,7 +2052,7 @@ function aruaru_learning_ai_cron_refresh(array $rankingData, int $maxPerRun = 12
             'ja'      => $fetched['ja'],
             'en'      => $fetched['en'],
             'updated' => $now,
-            'source'  => 'openai',
+            'source'  => 'aruaru-llm',
         ];
         $done++;
         usleep(350000);
@@ -1908,6 +2145,32 @@ function aruaru_learning_prices_http_get(string $url, int $timeout = 10): ?strin
 }
 
 /**
+ * サービス別に「1ヶ月プランの月額(税込)」を料金ページのHTMLから取り出す(2026-10-08)。
+ * 各ページの現状(JS描画ではなくHTMLに含まれる):
+ *  - dotinstall: <span class="plan-price-value" data-cycle="1">1,480</span>
+ *  - progate   : gon.plans の {"amount":1490,"currency":"jpy",...,"interval":"month","interval_count":1}
+ *  - paiza     : 「1ヶ月プラン ... <strong>1,490</strong>円（税込）」
+ * 取れない/範囲外(1,000〜99,999円以外)は null(呼び出し側で no_match 扱い、前回値を維持)。
+ */
+function aruaru_learning_prices_extract(string $key, string $html): ?int
+{
+    $re = null;
+    if ($key === 'dotinstall_monthly') {
+        $re = '/class="plan-price-value"\s+data-cycle="1"\s*>\s*([0-9]{1,3}(?:,[0-9]{3})*|[0-9]+)\s*</u';
+    } elseif ($key === 'progate_monthly') {
+        $re = '/"amount":([0-9]{3,6}),"currency":"jpy","price":"[^"]*","interval":"month","interval_count":1,/u';
+    } elseif ($key === 'paiza_monthly') {
+        // 実HTML: <h3> 1ヶ月プラン <span>..</span></h3> ... <strong>1,490</strong>円（税込）
+        $re = '/1ヶ月プラン.{0,400}?<strong>\s*([0-9]{1,3}(?:,[0-9]{3})+|[0-9]{4,5})\s*<\/strong>\s*円/us';
+    }
+    if ($re === null || !preg_match($re, $html, $m)) {
+        return null;
+    }
+    $n = (int)str_replace(',', '', (string)$m[1]);
+    return ($n >= 1000 && $n <= 99999) ? $n : null;
+}
+
+/**
  * HTML から「月額っぽい」円金額を推定（1,000〜99,999 円）
  * @return list<int>
  */
@@ -1975,10 +2238,11 @@ function aruaru_learning_prices_refresh(bool $verbose = false): array
         }
     }
 
+    // 2026-10-08: トップページには金額が無く常に no_match だったため、各サービスの料金ページへ変更
     $urls = [
-        'dotinstall_monthly' => 'https://dotinstall.com/',
-        'progate_monthly'    => 'https://prog-8.com/',
-        'paiza_monthly'      => 'https://paiza.jp/works',
+        'dotinstall_monthly' => 'https://dotinstall.com/premium',
+        'progate_monthly'    => 'https://progate.com/plans/for_users',
+        'paiza_monthly'      => 'https://paiza.jp/works/paid_plan_lp/settlement',
     ];
     $sources = [];
     $next = $cur;
@@ -1990,12 +2254,12 @@ function aruaru_learning_prices_refresh(bool $verbose = false): array
             $sources[$key] = 'fetch_failed';
             continue;
         }
-        $amounts = aruaru_learning_prices_scan_amounts($html);
-        if ($amounts === []) {
+        $one = aruaru_learning_prices_extract($key, $html);
+        if ($one === null) {
             $sources[$key] = 'no_match';
             continue;
         }
-        $picked = aruaru_learning_prices_pick_amount($amounts, $prev);
+        $picked = $one;
         $next[$key] = $picked;
         $sources[$key] = ($picked === $prev) ? 'unchanged' : ('updated:' . $picked);
     }
@@ -7801,6 +8065,65 @@ $ai_tech_cache_incomplete = !is_array($AI_TECH_DATA)
     || !is_array($fw0) || !isset($fw0['memory'])
     || !is_array($db0) || !isset($db0['memory']);
 $ai_tech_cache_old = file_exists(AI_TECH_CACHE) && (time() - filemtime(AI_TECH_CACHE) > 86400);
+
+/* ★ --ai-fix (2026-10-08追加): 既存のAI学習リンクの価格欄を訂正し、検証済みの事実を aruaru-llm に教えるだけの単発モード。 */
+if (PHP_SAPI === 'cli' && in_array('--ai-fix', $GLOBALS['argv'] ?? [], true)) {
+    while (ob_get_level() > 0) { ob_end_clean(); }
+    $fixed = aruaru_ai_fix_cache();
+    echo "価格訂正: {$fixed} 件\n";
+    echo "aruaru-llmへ学習: " . aruaru_ai_teach_prices(false) . " 件\n";
+    exit(0);
+}
+
+/* ★ --cron-tech (2026-10-08追加): 技術ランキング + 学習価格だけを更新するCron。
+   背景: CLIで --cron-all を渡すと、4950行目で include される
+   rakuten-mobile/index.php 側の --cron-all が先に走って exit し、
+   下の統合Cron(技術ランキング/学習価格)に到達せず、
+   ai-tech-ranking-cache.json 等が 2026-06-01 から更新されていなかった。
+   楽天モバイル/doda/英会話はRust版(audiocafe-cron-rust.service)が担当するため、
+   二重実行を避けて当モードでは扱わない。AI学習コメント(OpenAI依存)も対象外。
+   Rust版はサイトルート直下のキャッシュを読むため、更新後にそこへも複製する。 */
+if (PHP_SAPI === 'cli' && in_array('--cron-tech', $GLOBALS['argv'] ?? [], true)) {
+    while (ob_get_level() > 0) { ob_end_clean(); }   // 手前で出力されたHTMLを捨てる
+    $t0 = microtime(true);
+    echo "[" . date("Y-m-d H:i:s") . "] ========== aruaru cron-tech 開始 ==========\n";
+    echo "[" . date("Y-m-d H:i:s") . "] 書込権限: " . (is_writable(__DIR__) ? 'OK' : 'NG(書込不可)') . "\n";
+
+    echo "[" . date("Y-m-d H:i:s") . "] [1/3] AIテクノロジーランキング 更新...\n";
+    $data = aruaru_tech_refresh_rankings(true);
+    file_put_contents(AI_TECH_CACHE, json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    $srcs = implode(', ', $data['ranking_meta']['sources'] ?? ['baseline']);
+    echo "[" . date("Y-m-d H:i:s") . "] [1/3] 完了（外部: {$srcs}）\n";
+
+    echo "[" . date("Y-m-d H:i:s") . "] [2/3] 学習価格情報 更新...\n";
+    aruaru_learning_prices_refresh(true);
+    echo "[" . date("Y-m-d H:i:s") . "] [2/3] 完了\n";
+
+    // AI学習コメント(OpenAI)。OPENAI_API_KEY は systemd の EnvironmentFile から渡す。
+    // 未設定ならスキップ、利用上限に達したらその回は打ち切り(翌朝また再開)。
+    echo "[" . date("Y-m-d H:i:s") . "] [3/3] AI学習コメント 更新...\n";
+    aruaru_learning_ai_cron_refresh($data, 40, true);
+    $fixed = aruaru_ai_fix_cache();
+    $taught = aruaru_ai_teach_prices(true);
+    echo "[" . date("Y-m-d H:i:s") . "] [3/3] 完了（価格訂正 {$fixed} 件 / aruaru-llmへ学習 {$taught} 件）\n";
+
+    $now = time();
+    @touch(AI_TECH_CACHE, $now);
+    $root = dirname(__DIR__);
+    foreach ([AI_TECH_CACHE, ARUARU_LEARNING_PRICES_CACHE] as $f) {
+        if (!is_readable($f)) { echo "    (無し) {$f}\n"; continue; }
+        $dst = $root . '/' . basename($f);
+        $tmp = $dst . '.tmp' . getmypid();
+        if (@copy($f, $tmp) && @rename($tmp, $dst)) {
+            echo "    複製: {$dst}  " . date('Y-m-d H:i:s', (int)@filemtime($dst)) . "\n";
+        } else {
+            @unlink($tmp);
+            echo "    複製失敗: {$dst}\n";
+        }
+    }
+    echo "[" . date("Y-m-d H:i:s") . "] ========== aruaru cron-tech 完了（" . round(microtime(true) - $t0, 2) . "秒）==========\n";
+    exit(0);
+}
 
 /* ★ --cron-all: 全キャッシュを毎日まとめて更新する統合Cron */
 if (aruaru_is_cron_request()) {
