@@ -576,15 +576,111 @@ function aruaru_verified_service_prices(): array
 }
 
 /**
- * 学習リンクの price 欄を訂正する。検証済みサービスは実価格で上書き、それ以外は
- * 「無料」以外を「料金は公式サイトで要確認」にする(AIの推測価格は載せない)。
- * 食い違い(AIの記載と実価格が違った件)は $GLOBALS['aruaru_ai_corrections'] に溜める。
+ * 「無料」「Free」と書かれた価格欄の検証 (2026-10-14)。AIの「無料」表記は未検証だったため、
+ *  A=公式ドキュメント/無料公開が前提のサイト → 「無料」のまま
+ *  B=無料枠はあるが有料プランが主のサービス → 「一部無料・有料プランあり」
+ *  C=その他 → 実際にページを取得して料金・有料の記載を調べる(下の aruaru_scan_page_signals)
+ */
+function aruaru_free_host_tier(string $host): string
+{
+    $host = preg_replace('/^www\./', '', strtolower($host));
+    static $paid = [
+        'udemy.com', 'coursera.org', 'schoo.jp', 'codecademy.com', 'techacademy.jp', 'progate.com', 'prog-8.com',
+        'dotinstall.com', 'paiza.jp', 'pluralsight.com', 'linkedin.com', 'skillshare.com', 'treehouse.com',
+        'datacamp.com', 'edx.org', 'udacity.com', 'tutorialspoint.com', 'geeksforgeeks.org', 'baeldung.com',
+        'educative.io', 'frontendmasters.com', 'egghead.io', 'sejuku.net', 'aidemy.net', 'tech-camp.in',
+        'kikagaku.co.jp', 'zerotohero.dev', 'scrimba.com', 'laracasts.com', 'pragprog.com', 'oreilly.com',
+    ];
+    static $free = [
+        'qiita.com', 'zenn.dev', 'youtube.com', 'freecodecamp.org', 'github.com', 'developer.mozilla.org',
+        'learn.microsoft.com', 'docs.microsoft.com', 'developer.android.com', 'developer.apple.com', 'w3schools.com',
+        'wikipedia.org', 'go.dev', 'dart.dev', 'flutter.dev', 'kotlinlang.org', 'typescriptlang.org', 'php.net',
+        'python.org', 'python.jp', 'rust-lang.org', 'nextjs.org', 'react.dev', 'vuejs.org', 'nodejs.org', 'swift.org',
+        'ruby-lang.org', 'railsguides.jp', 'exercism.org', 'learnxinyminutes.com', 'elixirschool.com', 'lua.org',
+        'ziglang.org', 'dlang.org', 'crystal-lang.org', 'scala-lang.org', 'fortran-lang.org', 'swi-prolog.org',
+        'soliditylang.org', 'openjdk.org', 'oracle.com', 'postgresql.org', 'mysql.com', 'mongodb.com', 'sqlite.org',
+        'redis.io', 'docker.com', 'kubernetes.io', 'git-scm.com', 'rust-lang.org', 'mozilla.org',
+    ];
+    foreach ($paid as $d) {
+        if ($host === $d || str_ends_with($host, '.' . $d)) { return 'B'; }
+    }
+    foreach ($free as $d) {
+        if ($host === $d || str_ends_with($host, '.' . $d)) { return 'A'; }
+    }
+    if (preg_match('/^(docs?|developers?|learn|reference|guide)\./', $host)) { return 'A'; }
+    return 'C';
+}
+
+/**
+ * ページを取得して「料金・有料」の記載があるかを調べる(並列)。
+ * @param list<string> $urls
+ * @return array<string, ?bool> url => true(有料/料金の記載あり) / false(記載なし) / null(取得できず)
+ */
+function aruaru_scan_page_signals(array $urls, int $timeout = 12): array
+{
+    $out = [];
+    if ($urls === [] || !function_exists('curl_multi_init')) { return $out; }
+    $re = '/(有料|月額|年額|料金プラン|料金表|プレミアム|サブスク|会員登録が必要|ログインが必要|購入|カートに入れる|[¥￥]\s?\d|\d[\d,]*\s?円|pricing|subscribe|subscription|premium|buy now|add to cart|\$\s?\d{1,4}\b|per month|\/\s?month|paywall|members only|free trial|無料体験|無料トライアル)/iu';
+    $cainfo = (function_exists('aruaru_ca_bundle_with_extras') ? aruaru_ca_bundle_with_extras() : null) ?: (ini_get('curl.cainfo') ?: '/etc/pki/tls/cert.pem');
+    foreach (array_chunk(array_values(array_unique($urls)), 30) as $batch) {
+        $mh = curl_multi_init();
+        $hs = [];
+        foreach ($batch as $u) {
+            $ch = curl_init($u);
+            curl_setopt_array($ch, [
+                CURLOPT_RETURNTRANSFER => true, CURLOPT_FOLLOWLOCATION => true, CURLOPT_MAXREDIRS => 4,
+                CURLOPT_TIMEOUT => $timeout, CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_RANGE => '0-153599',
+                CURLOPT_USERAGENT => 'Mozilla/5.0 (compatible; aruaru-free-check/1.0)', CURLOPT_CAINFO => $cainfo,
+                CURLOPT_ENCODING => '',
+            ]);
+            curl_multi_add_handle($mh, $ch);
+            $hs[$u] = $ch;
+        }
+        do {
+            $st = curl_multi_exec($mh, $running);
+            if ($running) { curl_multi_select($mh, 1.0); }
+        } while ($running && $st === CURLM_OK);
+        foreach ($hs as $u => $ch) {
+            $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+            $body = (string)curl_multi_getcontent($ch);
+            if ($code >= 200 && $code < 400 && $body !== '') {
+                $text = preg_replace(['#<script\b.*?</script>#is', '#<style\b.*?</style>#is', '#<[^>]+>#'], ' ', $body);
+                $out[$u] = (bool)preg_match($re, (string)$text);
+            } else {
+                $out[$u] = null;
+            }
+            curl_multi_remove_handle($mh, $ch);
+            curl_close($ch);
+        }
+        curl_multi_close($mh);
+    }
+    return $out;
+}
+
+/** 「無料」「Free」の主張か。 */
+function aruaru_is_free_claim(string $price): bool
+{
+    return (bool)preg_match('/^(無料|無償|free)$/iu', trim($price));
+}
+
+/**
+ * 学習リンクの price 欄を訂正する。検証済みサービスは実価格で上書き。「無料」は上の分類で検証:
+ * A=そのまま、B=一部無料・有料プランあり、C=ページを調べて(料金の記載あり→有料プランあり / なし→無料(記載なし) / 取得不可→要確認)。
+ * それ以外の金額などは推測なので「要確認」にする。食い違いは $GLOBALS['aruaru_ai_corrections'] に溜める。
  * @param list<array> $items
+ * @param array<string, ?bool>|null $sigs 事前に調べたページの記載有無(省略時はこの中で調べる)
  * @return list<array>
  */
-function aruaru_ai_sanitize_links(array $items): array
+function aruaru_ai_sanitize_links(array $items, ?array $sigs = null): array
 {
     $verified = aruaru_verified_service_prices();
+    $need = [];
+    foreach ($items as $it) {
+        if (aruaru_is_free_claim((string)($it['price'] ?? '')) && aruaru_free_host_tier((string)(parse_url((string)($it['url'] ?? ''), PHP_URL_HOST) ?: '')) === 'C') {
+            $need[] = (string)$it['url'];
+        }
+    }
+    if ($sigs === null) { $sigs = aruaru_scan_page_signals($need); }
     foreach ($items as $i => $it) {
         $host = strtolower((string)(parse_url((string)($it['url'] ?? ''), PHP_URL_HOST) ?: ''));
         $host = preg_replace('/^www\./', '', $host);
@@ -597,7 +693,18 @@ function aruaru_ai_sanitize_links(array $items): array
                 $GLOBALS['aruaru_ai_corrections'][] = ['host' => $host, 'ai' => $price, 'verified' => $v];
             }
             $items[$i]['price'] = '月額' . number_format($v) . '円（税込・公式ページで確認）';
-        } elseif (!preg_match('/^(無料|無償|free)$/iu', $price)) {
+        } elseif (aruaru_is_free_claim($price)) {
+            $tier = aruaru_free_host_tier($host);
+            if ($tier === 'B') {
+                $items[$i]['price'] = '一部無料・有料プランあり（公式サイトで要確認）';
+            } elseif ($tier === 'C') {
+                $sig = $sigs[(string)($it['url'] ?? '')] ?? null;
+                $items[$i]['price'] = $sig === null ? '料金は公式サイトで要確認'
+                    : ($sig ? '有料プランの記載あり（公式サイトで要確認）' : '無料（ページ内に料金の記載なし・自動確認）');
+            }
+        } elseif (preg_match('/^(一部無料・有料プランあり|有料プランの記載あり|無料（ページ内に料金の記載なし|月額[0-9,]+円（税込・公式)/u', $price)) {
+            // すでに検証済みの表記はそのまま
+        } else {
             $items[$i]['price'] = '料金は公式サイトで要確認';
         }
     }
@@ -663,10 +770,23 @@ function aruaru_ai_fix_cache(): int
 {
     $cache = aruaru_learning_ai_load_cache();
     $before = count($GLOBALS['aruaru_ai_corrections'] ?? []);
+    // 「無料」と書かれた分類Cのページは、全体をまとめて1回だけ調べる
+    $need = [];
+    foreach (($cache['entries'] ?? []) as $e) {
+        foreach (['ja', 'en'] as $lang) {
+            foreach (($e[$lang] ?? []) as $it) {
+                if (aruaru_is_free_claim((string)($it['price'] ?? ''))
+                    && aruaru_free_host_tier((string)(parse_url((string)($it['url'] ?? ''), PHP_URL_HOST) ?: '')) === 'C') {
+                    $need[] = (string)$it['url'];
+                }
+            }
+        }
+    }
+    $sigs = aruaru_scan_page_signals($need);
     foreach (($cache['entries'] ?? []) as $k => $e) {
         foreach (['ja', 'en'] as $lang) {
             if (isset($e[$lang]) && is_array($e[$lang])) {
-                $cache['entries'][$k][$lang] = aruaru_ai_sanitize_links($e[$lang]);
+                $cache['entries'][$k][$lang] = aruaru_ai_sanitize_links($e[$lang], $sigs);
             }
         }
     }
