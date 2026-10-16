@@ -1319,6 +1319,7 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
 
 </head>
 <body>
+<p style="text-align:center;font-size:1.2rem;font-weight:700;margin:0.8rem 0;"><a href="https://ameblo.jp/www-aon/entry-12981724246.html" target="_blank" rel="noopener noreferrer">今の上海は経済崩壊でシャッター街なの？</a></p>
 
 <p style="text-align:center;font-size:.85rem;margin:0.5rem 0;"><a href="https://ameblo.jp/www-aon/entry-12974607800.html" target="_blank" rel="noopener">📝 上下水道配管や屋根瓦などのハイテク新素材。パナホームとヤマダホームのコーキングレス外壁</a></p>
 
