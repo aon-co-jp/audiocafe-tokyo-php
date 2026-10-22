@@ -1567,6 +1567,7 @@ function forceRootHome(e){
   <br>
   <br>
   <li><a href="https://aon.tokyo/cancer" target="_blank" rel="noopener noreferrer">Cancer Therapy. ガン治療法はこちら。</a></li>
+  <li><a href="/mono-sub-out/mono-sub-out-fully-balanced.pdf" target="_blank" rel="noopener noreferrer">Subwoofer output circuit (PDF, balanced &amp; unbalanced). サブウーファー出力 回路図(PDF・完全バランス用/アンバランス用)はこちら。</a> <small>[<a href="/mono-sub-out/mono_sub_out_schematic.jpg" target="_blank" rel="noopener noreferrer">JPG 完全バランス用</a> / <a href="/mono-sub-out/mono_sub_out_unbalanced.jpg" target="_blank" rel="noopener noreferrer">JPG アンバランス用</a>]</small></li>
   <br>
   <br>
 
