@@ -2445,7 +2445,7 @@ function aruaru_eikaiwa_master_pool(): array
 {
     return [
         // ===== スマホ・タブレット・PC 全対応 =====
-        ['rank'=> 1,  'name'=>'Praktika',             'platform'=>'📱',   'style'=>'AIアバター会話',    'level'=>'初級〜上級',   'price'=>'無料体験〜（有料プランあり）','url'=>'https://praktika.ai/',                   'ai'=>true,  'note'=>'AIアバターの先生と実際に話して学ぶ、AI英会話チューター'],
+        ['rank'=> 1,  'name'=>'Praktika',             'platform'=>'📱',   'style'=>'AIアバター会話',    'level'=>'初級〜上級',   'price'=>'月額¥1,500〜(1か月プラン・App Store日本で確認)','url'=>'https://praktika.ai/',                   'ai'=>true,  'note'=>'AIアバターの先生と実際に話して学ぶ、AI英会話チューター'],
         ['rank'=> 2,  'name'=>'Duolingo',             'platform'=>'📱💻', 'style'=>'ゲーム感覚',        'level'=>'初級〜中級',   'price'=>'無料（Pro月額¥1,250〜）',   'url'=>'https://ja.duolingo.com/',                'ai'=>false, 'note'=>'世界最大の語学学習アプリ。毎日継続しやすいゲーム形式'],
         ['rank'=> 3,  'name'=>'Speak',                 'platform'=>'📱💻', 'style'=>'AIスピーキング',    'level'=>'初級〜上級',   'price'=>'月額¥2,000〜',              'url'=>'https://www.speak.com/ja',                'ai'=>true,  'note'=>'AIが発音・会話をリアルタイム採点。話す練習特化'],
         ['rank'=> 4,  'name'=>'ELSA Speak',            'platform'=>'📱',   'style'=>'発音矯正AI',        'level'=>'初級〜上級',   'price'=>'無料（Pro月額¥1,500〜）',   'url'=>'https://elsaspeak.com/ja/',               'ai'=>true,  'note'=>'AI音声認識で発音を細かくスコアリング'],
