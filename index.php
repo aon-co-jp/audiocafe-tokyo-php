@@ -1320,6 +1320,7 @@ body>:not(.yt-bg-outer):not(#ytBgVolumeWrap):not(#ytBgCtxMenu){position:relative
 </head>
 <body>
 <div class="pixel-intro">
+<p style="text-align:center;margin:1rem auto .4rem;max-width:420px;font-size:.95rem;">💡 SMSのワンタイムパスワードが受け取れない場合に、設定から仮想メモリーを4GBから8GBに変更すると受け取れるようになる場合がございますので、お試しください。</p>
 <h2 style="font-size:1.3rem;margin:1rem 0 .2rem;text-align:center;">📱 2026年10月 スマホ紹介(楽天モバイル)</h2>
 <p style="text-align:center;margin:0 0 .4rem;font-size:.95rem;">8GBメモリの1円スマホはほとんど売り切れ。乗り換えならこの2台がおすすめです。</p>
 <p style="text-align:center;margin:0 0 .6rem;font-size:.95rem;">💡 スマホでLINEやカカオトークをご利用の方は、定期的にキャッシュをクリアされた方が処理が重くなりにくいのでお勧めです。</p>
