@@ -23,9 +23,8 @@ if (function_exists('date_default_timezone_set')) {
 ========================================================= */
 if (!defined('ARUARU_CRON_KEY')) {
     // 環境変数 ARUARU_CRON_KEY を優先（本番はサーバー環境変数で上書き必須）。
-    // 未設定時のみ暫定値にフォールバックするが、これは公開リポジトリに含まれる
-    // 既知の値のため、本番運用では必ず環境変数で上書きすること。
-    define('ARUARU_CRON_KEY', getenv('ARUARU_CRON_KEY') ?: 'change-this-secret-2026');
+    // 未設定なら推測不能な乱数にして、クエリ経由のcronを無効化する（公開リポジトリの既知値を使わない）。
+    define('ARUARU_CRON_KEY', getenv('ARUARU_CRON_KEY') ?: bin2hex(random_bytes(32)));
 }
 if (!function_exists('aruaru_is_cron_request')) {
     function aruaru_is_cron_request(string $flag = ''): bool {

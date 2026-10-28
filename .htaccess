@@ -93,3 +93,16 @@ AddDefaultCharset UTF-8
 #    header('Expires: Thu, 01 Jan 1970 00:00:00 GMT');
 #    ?>
 # ============================================================
+
+# ------------------------------
+# 7. セキュリティ（ログ・設定・隠しファイルの直接閲覧禁止、基本ヘッダー）
+# ------------------------------
+<FilesMatch "(\.log|\.bak|\.sql|\.env|\.ini|\.md)$|^\.">
+    Require all denied
+</FilesMatch>
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+Options -Indexes
