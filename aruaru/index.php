@@ -467,7 +467,7 @@ function aruaru_llm_complete(string $prompt, int $timeout = 60): ?string
     $tried = 0;
     foreach (['gemini', 'groq', 'mistral'] as $prov) {
         $tried++;
-        $ch = curl_init(aruaru_llm_url() . '/v1/chat-providers/complete-priority');
+        $ch = curl_init(aruaru_llm_url() . '/aruaru_llm.v1.Llm/ChatProvidersCompletePriority');
         curl_setopt_array($ch, [
             CURLOPT_POST           => true,
             CURLOPT_HTTPHEADER     => ['Content-Type: application/json'],
@@ -549,7 +549,7 @@ function aruaru_filter_live_urls(array $items, int $timeout = 8): array
 /* ===== AI学習コメントの価格訂正と学習 (2026-10-08) =====
    AIが書いた価格欄は実価格と食い違うことが分かった(24件中23件)。
    1) 保存前に、実際に料金ページから取得した月額で上書きする(確認できない価格は「要確認」)。
-   2) 検出した食い違いと検証済みの事実を、aruaru-llm の知識ストア(/v1/knowledge/add)へ教える。
+   2) 検出した食い違いと検証済みの事実を、aruaru-llm の知識ストア(KnowledgeAdd)へ教える。
       知識は aruaru-llm 側が 6時間ごと/クロール直後に GitHub へ自動バックアップし、
       VPSを初期化しても起動時に GitHub から復元される(sync-knowledge-to-github.sh / knowledge.rs)。
    公開リポジトリに保存されるため、教えるのは公開情報(公式ページの料金)だけにする。 */
@@ -714,7 +714,7 @@ function aruaru_ai_sanitize_links(array $items, ?array $sigs = null): array
 function aruaru_llm_teach(string $text, array $tags, string $source): bool
 {
     if (!aruaru_llm_enabled() || !function_exists('curl_init')) { return false; }
-    $ch = curl_init(aruaru_llm_url() . '/v1/knowledge/add');
+    $ch = curl_init(aruaru_llm_url() . '/aruaru_llm.v1.Llm/KnowledgeAdd');
     curl_setopt_array($ch, [
         CURLOPT_POST => true,
         CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
@@ -1236,7 +1236,7 @@ function aruaru_tech_call_aruaru_llm(string $message, string $tenant = 'audiocaf
             'ignore_errors' => true,
         ],
     ]);
-    $raw = @file_get_contents(rtrim(ARUARU_LLM_ENDPOINT, '/') . '/v1/chat', false, $ctx);
+    $raw = @file_get_contents(rtrim(ARUARU_LLM_ENDPOINT, '/') . '/aruaru_llm.v1.Llm/Chat', false, $ctx);
     if ($raw === false || $raw === '') {
         return null;
     }
